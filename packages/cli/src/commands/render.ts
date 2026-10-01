@@ -1,9 +1,10 @@
 import { spawn } from 'node:child_process';
+import { existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { rendererNames } from '@pathtracer-fidelity/renderers';
 import { listSceneNames } from '@pathtracer-fidelity/scenes';
 import { defineCommand } from 'yargs-file-commands';
-import { resultsDir } from '../paths.js';
+import { renderPath, resultsDir } from '../paths.js';
 import type { RenderJob } from '../render-process.js';
 import { selectNames } from '../select.js';
 
@@ -35,7 +36,12 @@ export const command = defineCommand({
         default: 4096,
         describe: 'Samples per pixel',
       })
-      .option('output', { type: 'string', default: resultsDir, describe: 'Results directory' }),
+      .option('output', { type: 'string', default: resultsDir, describe: 'Results directory' })
+      .option('missing-only', {
+        type: 'boolean',
+        default: false,
+        describe: 'Skip scene/renderer pairs whose render already exists',
+      }),
   handler: async (argv) => {
     const scenes = selectNames(listSceneNames(), argv.scenes, 'scene');
     const renderers = selectNames(cliRendererNames, argv.renderers, 'renderer') as RenderJob['renderer'][];
@@ -45,6 +51,7 @@ export const command = defineCommand({
     // result may depend on what rendered before it
     for (const renderer of renderers) {
       for (const scene of scenes) {
+        if (argv.missingOnly && existsSync(renderPath(scene, renderer, argv.output))) continue;
         const code = await run({ renderer, scenes: [scene], outDir: argv.output, samples: argv.samples });
         if (code !== 0) {
           console.error(`${scene} | ${renderer} failed (exit code ${code})`);
