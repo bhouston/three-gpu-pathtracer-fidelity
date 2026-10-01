@@ -7,7 +7,7 @@
   "type": "module",
   "scripts": {
     "prepare": "husky",
-    "build": "tsc -b && pnpm --filter ./submodules/three.js build && pnpm -r --if-present --filter './packages/*' build",
+    "build": "tsc -b && pnpm -r --if-present --filter './packages/*' build",
     "dev": "pnpm -r --parallel --stream dev",
     "tsc": "tsc -b",
     "format": "oxfmt .",
