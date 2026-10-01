@@ -32,26 +32,26 @@ Workflow rules (issues, branches, Conventional Commits, PRs, required checks) ar
 
 ```
 submodules/three-gpu-pathtracer  bhouston/three-gpu-pathtracer: both path tracers (WebGL and WebGPU)
-submodules/three.js              bhouston/three.js: the single three.js build everything uses
 submodules/glTF-Sample-Assets    KhronosGroup/glTF-Sample-Assets: the models of the khronos-* / x-* scenes
 submodules/3d-demo-data          gkjohnson/3d-demo-data: the models and HDRs of the model-* scenes
 submodules/ldraw-parts-library   gkjohnson/ldraw-parts-library: LDraw parts and the LEGO models
 assets/environments/             HDR lighting of those scenes (from KhronosGroup/glTF-Render-Fidelity-Generator)
+assets/models/                   glTF/LDraw models used directly by scenes (Michelle.glb, two LEGO LDraw models)
 packages/scenes     @pathtracer-fidelity/scenes     renderer-agnostic scene definitions + registry (browser and node)
 packages/renderers  @pathtracer-fidelity/renderers  WebGL Legacy and WebGPU New adapters behind one LiveRenderer API
 packages/cli        @pathtracer-fidelity/cli        headless render / quality-gate (+ the Blender runner)
 results/<scene>/beauty/                              committed render output; scored/viewed with fidelity-kit
 ```
 
-The workspace overrides `three` with `workspace:*`, so every package, and three-gpu-pathtracer itself, uses the build in
-`submodules/three.js`. There is only ever one copy of three.
+The workspace overrides `three` to a single pinned npm version, so every package, and three-gpu-pathtracer itself, uses
+the same install. There is only ever one copy of three.
 
 ### `packages/scenes`
 
 - `src/types.ts` holds the contract. A `SceneDefinition` has a `name`, `description`, `width`/`height` and an async
   `create(ctx)`, which returns a `SceneSetup`: the scene, camera, orbit `target`, and tone mapping.
 - `src/index.ts` is the registry (`listSceneNames`, `getScene`). Scene families each live in their own file.
-- Assets (glTF, HDR) are loaded from paths relative to `submodules/three.js/examples/`, or the repository root with a `@/` prefix.
+- Assets (glTF, HDR) are loaded from paths relative to the installed `three` package's `examples/`, or the repository root with a `@/` prefix.
 - `src/khronos.ts` builds the `khronos-*` and `x-*` scenes from `src/khronos-scenarios.json`: the scenarios of
   three-gpu-pathtracer's `example/viewerTest.js` (Khronos glTF-Render-Fidelity-Generator `config.json` @ `deaaba0`, plus the
   example's `extraScenarios.json`), camera and size included. The Khronos golden images are not used: every reference is
@@ -102,7 +102,7 @@ Not every renderer is rendered for every scene.
 ```bash
 git clone --recurse-submodules <repo>   # or: git submodule update --init
 pnpm install --frozen-lockfile          # Node 26 (.nvmrc), pnpm pinned in package.json
-pnpm build                              # tsc -b, builds submodules/three.js, then the packages
+pnpm build                              # tsc -b, then the packages
 pnpm tsc && pnpm lint && pnpm test --coverage
 pnpm exec oxfmt <changed files>
 ```

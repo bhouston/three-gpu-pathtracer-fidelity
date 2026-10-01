@@ -1,6 +1,5 @@
 packages:
   - packages/*
-  - submodules/three.js
   - submodules/three-gpu-pathtracer
 
 allowBuilds:
@@ -12,7 +11,7 @@ allowBuilds:
 
 link-workspace-packages: false
 
-# one copy of three everywhere (three-mesh-bvh, three-gpu-pathtracer, scenes, renderers): the fork in the submodule
+# one copy of three everywhere (three-mesh-bvh, three-gpu-pathtracer, scenes, renderers): plain npm three
 overrides:
-  three: 'workspace:*'
+  three: '^0.186.0'
   '@types/three': '^0.186.0'

@@ -5,10 +5,10 @@ import { fileURLToPath } from 'node:url';
 import { expect, it } from 'vitest';
 
 const repoRoot = fileURLToPath(new URL('../../../', import.meta.url));
-const threeBuild = realpathSync(path.join(repoRoot, 'submodules/three.js/build'));
 
-// `three` must be the submodule fork for every importer, or core classes (and WebGL/WebGPU state) get duplicated
-it('resolves one copy of three (the submodule) everywhere', () => {
+// `three` must resolve to the same npm install for every importer, or core classes (and WebGL/WebGPU state) get
+// duplicated
+it('resolves one copy of three everywhere', () => {
   const pathtracerEntry = path.join(repoRoot, 'submodules/three-gpu-pathtracer/src/index.js'); // its ESM source entry
   const fromPathtracer = createRequire(pathtracerEntry);
   const importers = {
@@ -18,10 +18,9 @@ it('resolves one copy of three (the submodule) everywhere', () => {
     'three-gpu-pathtracer': pathtracerEntry,
     'three-mesh-bvh': fromPathtracer.resolve('three-mesh-bvh'),
   };
+  const threeDir = path.dirname(realpathSync(createRequire(import.meta.url).resolve('three/webgpu')));
   for (const [name, importer] of Object.entries(importers)) {
-    // The fork's build/dev scripts produce ESM bundles, not its historical three.cjs entry.
-    // This condition-independent export checks package identity without requiring a stale CJS build.
     const resolved = realpathSync(createRequire(importer).resolve('three/webgpu'));
-    expect(path.dirname(resolved), name).toBe(threeBuild);
+    expect(path.dirname(resolved), name).toBe(threeDir);
   }
 });

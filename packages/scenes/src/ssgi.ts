@@ -109,7 +109,7 @@ async function createCornellBox(setup: Setup, ctx: SceneContext): Promise<SceneS
     metalSphere.position.set(4, 2, 4);
     scene.add(cone(), metalSphere);
   } else {
-    const gltf = await ctx.loadGLTF('models/gltf/Michelle.glb');
+    const gltf = await ctx.loadGLTF('@/assets/models/gltf/Michelle.glb');
     const character = gltf.scene;
     character.traverse((child) => {
       if ((child as Mesh).isMesh) shadowed(child);

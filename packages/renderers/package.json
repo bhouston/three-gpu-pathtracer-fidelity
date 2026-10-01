@@ -20,7 +20,7 @@
   },
   "dependencies": {
     "@pathtracer-fidelity/scenes": "workspace:*",
-    "three": "workspace:*",
+    "three": "^0.186.0",
     "three-gpu-pathtracer": "workspace:*",
     "three-mesh-bvh": "^0.9.15"
   },

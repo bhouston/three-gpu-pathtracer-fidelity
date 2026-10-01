@@ -173,7 +173,7 @@ function mecaBricksGoldCorrection(model: Object3D): void {
 }
 
 const LDRAW = 'submodules/ldraw-parts-library/models';
-const THREE_LDRAW = 'submodules/three.js/examples/models/ldraw/officialLibrary/models';
+const THREE_LDRAW = 'assets/models/ldraw';
 const ldrawGlass = (model: Object3D) => convertOpacityToTransmission(model, 1.4);
 const ldraw = (name: string, file: string): ModelEntry => ({
   name: `lego-${name}`,
