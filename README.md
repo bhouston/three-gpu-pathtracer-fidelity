@@ -35,6 +35,7 @@ submodules/three-gpu-pathtracer  bhouston/three-gpu-pathtracer: both path tracer
 submodules/three.js              bhouston/three.js: the single three.js build everything uses
 submodules/glTF-Sample-Assets    KhronosGroup/glTF-Sample-Assets: the models of the khronos-* / x-* scenes
 submodules/3d-demo-data          gkjohnson/3d-demo-data: the models and HDRs of the model-* scenes
+submodules/ldraw-parts-library   gkjohnson/ldraw-parts-library: LDraw parts and the LEGO models
 assets/environments/             HDR lighting of those scenes (from KhronosGroup/glTF-Render-Fidelity-Generator)
 packages/scenes     @pathtracer-fidelity/scenes     renderer-agnostic scene definitions + registry (browser and node)
 packages/renderers  @pathtracer-fidelity/renderers  WebGL Legacy and WebGPU New adapters behind one LiveRenderer API
@@ -57,7 +58,7 @@ The workspace overrides `three` with `workspace:*`, so every package, and three-
   rendered here with Blender.
 - `src/model-list.ts` builds the `model-*` scenes from the model list of three-gpu-pathtracer's `example/index.js`: glTF
   models normalized to a unit sphere on its stage (`src/model-stage.ts`: floor / pedestal / backdrop, rect-area light rigs,
-  gradient background). The LEGO models (LDraw, Collada) are not ported yet.
+  gradient background). The LEGO models are LDraw (parts from `submodules/ldraw-parts-library`) or Collada.
 - **To add a scene:** add a `SceneDefinition` to a family file (or a new one), spread it into the registry in
   `index.ts`, extend the family's `*.test.ts`, then render all three renderers.
 

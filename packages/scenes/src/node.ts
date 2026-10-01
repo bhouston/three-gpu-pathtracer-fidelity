@@ -1,17 +1,23 @@
 // Node scene context: reads assets from disk, decodes glTF images with sharp and runs the Draco and Basis decoders
 // in-thread.
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { readFile } from 'node:fs/promises';
 import { resolveObjectURL } from 'node:buffer';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+import { DOMParser } from '@xmldom/xmldom';
 import sharp from 'sharp';
-import { DataTexture, LoadingManager } from 'three';
+import { DataTexture, LoadingManager, MeshStandardMaterial } from 'three';
+import type { Mesh } from 'three';
 import type { Texture } from 'three';
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import type { GLTFParser } from 'three/addons/loaders/GLTFLoader.js';
+import { ColladaLoader } from 'three/addons/loaders/ColladaLoader.js';
 import { HDRLoader } from 'three/addons/loaders/HDRLoader.js';
+import { LDrawLoader } from 'three/addons/loaders/LDrawLoader.js';
+import { LDrawConditionalLineMaterial } from 'three/addons/materials/LDrawConditionalLineMaterial.js';
+import { LDrawUtils } from 'three/addons/utils/LDrawUtils.js';
 import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
 import { RGBAKTX2Loader } from './ktx2.js';
 import type { SceneContext } from './types.js';
@@ -140,6 +146,53 @@ export function createNodeSceneContext(examplesDir = threeExamplesDir): SceneCon
     },
     async loadHDR(assetPath) {
       return new HDRLoader().createDataTexture(new Uint8Array(await readFile(resolveAsset(assetPath))).buffer);
+    },
+    async loadLDraw(assetPath) {
+      // LDrawLoader probes several folders for each part: a missing file must fail the fetch, not throw
+      const ldrawManager = new LoadingManager().setURLModifier((url) =>
+        url.startsWith('file:')
+          ? existsSync(fileURLToPath(url))
+            ? `data:application/octet-stream;base64,${readFileSync(fileURLToPath(url)).toString('base64')}`
+            : 'missing:'
+          : url,
+      );
+      const library = `${pathToFileURL(path.join(repoRoot, 'submodules/ldraw-parts-library')).href}/`;
+      const ldraw = new LDrawLoader(ldrawManager);
+      ldraw.setConditionalLineMaterial(LDrawConditionalLineMaterial as never);
+      await ldraw.preloadMaterials(`${library}colors/ldcfgalt.ldr`);
+      const result = await ldraw
+        .setPartsLibraryPath(`${library}complete/ldraw/`)
+        .loadAsync(pathToFileURL(resolveAsset(assetPath)).href);
+      const model = LDrawUtils.mergeObject(result);
+      model.rotation.set(Math.PI, 0, 0);
+      const lines: Mesh[] = [];
+      model.traverse((c) => {
+        if ((c as { isLineSegments?: boolean }).isLineSegments) lines.push(c as Mesh);
+        if ((c as Mesh).isMesh) ((c as Mesh).material as MeshStandardMaterial).roughness *= 0.25;
+      });
+      for (const line of lines) line.removeFromParent();
+      return model;
+    },
+    async loadCollada(assetPath) {
+      const file = resolveAsset(assetPath);
+      (globalThis as { DOMParser?: unknown }).DOMParser ??= DOMParser; // ColladaLoader parses XML
+      const { scene } = new ColladaLoader().parse(
+        await readFile(file, 'utf8'),
+        `${pathToFileURL(path.dirname(file)).href}/`,
+      )!;
+      scene.scale.setScalar(1);
+      scene.traverse((c) => {
+        const material = (c as Mesh).material as MeshStandardMaterial & { isMeshPhongMaterial?: boolean };
+        if (material?.isMeshPhongMaterial) {
+          (c as Mesh).material = new MeshStandardMaterial({
+            color: material.color,
+            roughness: material.roughness || 0,
+            metalness: material.metalness || 0,
+            map: material.map || null,
+          });
+        }
+      });
+      return scene;
     },
   };
 }

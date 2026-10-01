@@ -1,7 +1,7 @@
 // Scenes of three-gpu-pathtracer's example/index.js model list (example/modelList.js): glTF models from the
 // 3d-demo-data and glTF-Sample-Assets submodules, normalized to a unit sphere and shown on the demo's stage
 // (floor / pedestal / backdrop, rect-area light rigs, HDR or gradient lighting). Each entry's `post` is its
-// `postProcess`. The LEGO models (LDraw, Collada) are not ported yet.
+// `postProcess`. The LEGO models are LDraw (.mpd, parts from submodules/ldraw-parts-library) or Collada (.dae).
 import {
   ACESFilmicToneMapping,
   Box3,
@@ -154,6 +154,32 @@ function removeFaintSurfaces(model: Object3D): void {
     if (!(m instanceof MeshPhysicalMaterial) && m.opacity < 1) mesh.removeFromParent();
   }
 }
+
+/** The MecaBricks exports use two dark golds that read as muddy brown when path traced. */
+function mecaBricksGoldCorrection(model: Object3D): void {
+  for (const mesh of meshes(model)) {
+    const m = physical(mesh);
+    const hex = m.color.getHexString();
+    if (hex === '7f4c0e') {
+      m.color.set(0xc2801f).multiplyScalar(0.9);
+    } else if (hex === '613708') {
+      m.color.set(0xc2801f);
+      m.color.g *= 0.75;
+      m.color.b *= 0.75;
+    } else continue;
+    m.roughness = 0.45;
+    m.metalness = 0.6;
+  }
+}
+
+const LDRAW = 'submodules/ldraw-parts-library/models';
+const THREE_LDRAW = 'submodules/three.js/examples/models/ldraw/officialLibrary/models';
+const ldrawGlass = (model: Object3D) => convertOpacityToTransmission(model, 1.4);
+const ldraw = (name: string, file: string): ModelEntry => ({
+  name: `lego-${name}`,
+  file: `${LDRAW}/${file}`,
+  post: ldrawGlass,
+});
 
 const entries: ModelEntry[] = [
   { name: 'nasa-jpl-m2020-rover', file: `${DEMO}/nasa-m2020/Perseverance.glb` },
@@ -405,10 +431,46 @@ const entries: ModelEntry[] = [
       for (const mesh of meshes(model)) physical(mesh).color.set(0xdddddd);
     },
   },
+
+  ldraw('allied-avenger', '6887-1 - Allied Avenger.mpd'),
+  {
+    name: 'lego-apollo-11-lander',
+    file: `${DEMO}/mecabricks/apollo-11-lunar-lander/lunar-lander.dae`,
+    post: mecaBricksGoldCorrection,
+    rotation: [0, -PI * 0.6, 0],
+  },
+  ldraw('b-wing-starfighter', '10227-1 - B-wing Starfighter.mpd'),
+  ldraw('bennys-spaceship', '70816 - Bennys Spaceship Spa_kOdSy6E.mpd'),
+  ldraw('blizzard-baron', '6879-1 - Blizzard Baron.mpd'),
+  ldraw('ice-station-odyssey', '6983-1 - Ice Station Odyssey.mpd'),
+  ldraw('ice-tunnelator', '6814-1 - Ice Tunnelator.mpd'),
+  {
+    name: 'lego-lunar-vehicle',
+    file: `${THREE_LDRAW}/1621-1-LunarMPVVehicle.mpd_Packed.mpd`,
+    rotation: [PI, -PI / 2, 0],
+    post: ldrawGlass,
+  },
+  {
+    name: 'lego-nasa-mars-rover',
+    file: `${DEMO}/mecabricks/nasa-mars-curiosity-rover.dae`,
+    post: mecaBricksGoldCorrection,
+  },
+  ldraw('stellar-recon-voyager', '6956-1 - Stellar Recon Voyager.mpd'),
+  ldraw('super-model-building-instruction', '6861-2 - Super Model Building Instruction.mpd'),
+  { name: 'lego-ucs-at-st', file: `${THREE_LDRAW}/10174-1-ImperialAT-ST-UCS.mpd_Packed.mpd`, post: ldrawGlass },
+  ldraw('ucs-imperial-star-destroyer', '10030-1 - Imperial Star Destroyer - UCS.mpd'),
+  ldraw('ucs-millennium-falcon', '10179-1 - Millennium Falcon - UCS.mpd'),
+  ldraw('ucs-tie-interceptor', '7181 - TIE Interceptor - UCS.mpd'),
+  ldraw('ucs-x-wing-fighter', '7191 - X-wing Fighter - UCS.mpd'),
 ];
 
 async function createModelScene(entry: ModelEntry, ctx: SceneContext): Promise<SceneSetup> {
-  const model = (await ctx.loadGLTF(`@/${entry.file}`)).scene;
+  const path = `@/${entry.file}`;
+  const model = entry.file.endsWith('.mpd')
+    ? await ctx.loadLDraw(path)
+    : entry.file.endsWith('.dae')
+      ? await ctx.loadCollada(path)
+      : (await ctx.loadGLTF(path)).scene;
   for (const mesh of meshes(model)) physical(mesh).thickness = 1; // render the materials as volumetric objects
   entry.post?.(model);
   // rotate after, so it doesn't affect the bounding sphere scale

@@ -17,3 +17,7 @@
 	path = submodules/3d-demo-data
 	url = https://github.com/gkjohnson/3d-demo-data.git
 	ignore = dirty
+[submodule "submodules/ldraw-parts-library"]
+	path = submodules/ldraw-parts-library
+	url = https://github.com/gkjohnson/ldraw-parts-library.git
+	ignore = dirty
