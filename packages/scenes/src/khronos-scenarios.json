@@ -1,0 +1,1954 @@
+[
+  {
+    "name": "khronos-DragonAttenuation",
+    "model": "DragonAttenuation/glTF/DragonAttenuation.gltf",
+    "orbit": {
+      "radius": 5
+    }
+  },
+  {
+    "name": "khronos-IridescentDishWithOlives",
+    "model": "IridescentDishWithOlives/glTF-Binary/IridescentDishWithOlives.glb",
+    "lighting": "spruit_sunrise_1k_HDR.hdr",
+    "renderSkybox": true,
+    "orbit": {
+      "radius": 0.47,
+      "theta": -70
+    },
+    "dimensions": {
+      "height": 570
+    },
+    "target": {
+      "y": 0.11
+    }
+  },
+  {
+    "name": "khronos-ToyCar",
+    "model": "ToyCar/glTF-Binary/ToyCar.glb",
+    "orbit": {
+      "radius": 0.037,
+      "theta": -35,
+      "phi": 75
+    },
+    "dimensions": {
+      "width": 1200,
+      "height": 500
+    },
+    "target": {
+      "y": 0.001
+    }
+  },
+  {
+    "name": "khronos-SheenChair",
+    "model": "SheenChair/glTF-Binary/SheenChair.glb",
+    "orbit": {
+      "radius": 1.0
+    },
+    "target": {
+      "y": 0.3
+    },
+    "dimensions": {
+      "height": 450
+    }
+  },
+  {
+    "name": "khronos-MaterialsVariantsShoe",
+    "model": "MaterialsVariantsShoe/glTF-Binary/MaterialsVariantsShoe.glb",
+    "orbit": {
+      "radius": 0.275,
+      "theta": 35,
+      "phi": 49
+    },
+    "target": {
+      "y": 0.06,
+      "x": 0.03
+    },
+    "dimensions": {
+      "height": 500
+    }
+  },
+  {
+    "name": "khronos-BoomBox",
+    "model": "BoomBox/glTF/BoomBox.gltf",
+    "orbit": {
+      "radius": 0.03
+    }
+  },
+  {
+    "name": "khronos-FlightHelmet",
+    "model": "FlightHelmet/glTF/FlightHelmet.gltf",
+    "target": {
+      "y": 0.32
+    }
+  },
+  {
+    "name": "khronos-SciFiHelmet",
+    "model": "SciFiHelmet/glTF/SciFiHelmet.gltf",
+    "orbit": {
+      "radius": 4
+    }
+  },
+  {
+    "name": "khronos-DamagedHelmet",
+    "model": "DamagedHelmet/glTF-Binary/DamagedHelmet.glb",
+    "lighting": "aircraft_workshop_01_1k.hdr",
+    "orbit": {
+      "radius": 3
+    }
+  },
+  {
+    "name": "khronos-ABeautifulGame",
+    "model": "ABeautifulGame/glTF/ABeautifulGame.gltf",
+    "renderSkybox": true,
+    "orbit": {
+      "radius": 1,
+      "theta": -140,
+      "phi": 50
+    },
+    "target": {
+      "y": -0.15
+    },
+    "dimensions": {
+      "height": 600,
+      "width": 1000
+    }
+  },
+  {
+    "name": "khronos-IridescenceLamp",
+    "model": "IridescenceLamp/glTF/IridescenceLamp.gltf",
+    "renderSkybox": true,
+    "orbit": {
+      "radius": 0.85,
+      "theta": 0,
+      "phi": 100
+    },
+    "target": {
+      "y": 0.25
+    },
+    "dimensions": {
+      "height": 800,
+      "width": 620
+    }
+  },
+  {
+    "name": "khronos-LightsPunctualLamp",
+    "model": "LightsPunctualLamp/glTF/LightsPunctualLamp.gltf",
+    "renderSkybox": true,
+    "orbit": {
+      "radius": 2.75,
+      "theta": -155,
+      "phi": 90
+    },
+    "target": {
+      "x": 0.25,
+      "y": 0.85
+    },
+    "dimensions": {
+      "height": 800,
+      "width": 550
+    }
+  },
+  {
+    "name": "khronos-MosquitoInAmber",
+    "model": "MosquitoInAmber/glTF/MosquitoInAmber.gltf",
+    "renderSkybox": true,
+    "orbit": {
+      "radius": 0.2,
+      "theta": -25,
+      "phi": 75
+    },
+    "dimensions": {
+      "height": 700,
+      "width": 700
+    }
+  },
+  {
+    "name": "khronos-EmissiveStrengthTest",
+    "model": "EmissiveStrengthTest/glTF/EmissiveStrengthTest.gltf",
+    "orbit": {
+      "radius": 12,
+      "theta": 0,
+      "phi": 75
+    },
+    "dimensions": {
+      "height": 600,
+      "width": 1000
+    }
+  },
+  {
+    "name": "khronos-IridescenceDielectricSpheres",
+    "model": "IridescenceDielectricSpheres/glTF/IridescenceDielectricSpheres.gltf",
+    "orbit": {
+      "radius": 50,
+      "theta": 45,
+      "phi": 65
+    },
+    "target": {
+      "y": -3
+    },
+    "dimensions": {
+      "height": 700,
+      "width": 700
+    }
+  },
+  {
+    "name": "khronos-IridescenceMetallicSpheres",
+    "model": "IridescenceMetallicSpheres/glTF/IridescenceMetallicSpheres.gltf",
+    "orbit": {
+      "radius": 50,
+      "theta": 45,
+      "phi": 65
+    },
+    "target": {
+      "y": -3
+    },
+    "dimensions": {
+      "height": 700,
+      "width": 700
+    }
+  },
+  {
+    "name": "khronos-IridescenceSuzanne",
+    "model": "IridescenceSuzanne/glTF/IridescenceSuzanne.gltf",
+    "renderSkybox": true,
+    "orbit": {
+      "radius": 5
+    },
+    "dimensions": {
+      "height": 400,
+      "width": 1000
+    }
+  },
+  {
+    "name": "khronos-AntiqueCamera",
+    "model": "AntiqueCamera/glTF/AntiqueCamera.gltf",
+    "dimensions": {
+      "width": 512
+    },
+    "target": {
+      "y": 3.6
+    },
+    "orbit": {
+      "radius": 11.2
+    }
+  },
+  {
+    "name": "khronos-Corset",
+    "model": "Corset/glTF/Corset.gltf",
+    "target": {
+      "y": 0.03
+    },
+    "orbit": {
+      "radius": 0.095
+    }
+  },
+  {
+    "name": "khronos-Avocado",
+    "model": "Avocado/glTF/Avocado.gltf",
+    "target": {
+      "y": 0.0314
+    },
+    "orbit": {
+      "radius": 0.091
+    }
+  },
+  {
+    "name": "khronos-BarramundiFish",
+    "model": "BarramundiFish/glTF-Binary/BarramundiFish.glb",
+    "dimensions": {
+      "width": 1024,
+      "height": 512
+    },
+    "target": {
+      "y": 0.14
+    },
+    "orbit": {
+      "theta": -90,
+      "radius": 0.4
+    }
+  },
+  {
+    "name": "khronos-Lantern",
+    "model": "Lantern/glTF/Lantern.gltf",
+    "dimensions": {
+      "height": 1024
+    },
+    "target": {
+      "x": 4,
+      "y": 13
+    },
+    "orbit": {
+      "radius": 39
+    }
+  },
+  {
+    "name": "khronos-GlamVelvetSofa",
+    "model": "GlamVelvetSofa/glTF/GlamVelvetSofa.gltf",
+    "dimensions": {
+      "height": 250
+    },
+    "target": {
+      "z": -1
+    },
+    "orbit": {
+      "theta": 2,
+      "phi": 70.0,
+      "radius": 2.45
+    }
+  },
+  {
+    "name": "khronos-SheenCloth",
+    "model": "SheenCloth/glTF/SheenCloth.gltf",
+    "orbit": {
+      "radius": 0.059
+    },
+    "target": {
+      "y": 0.015
+    },
+    "dimensions": {
+      "width": 1200
+    }
+  },
+  {
+    "name": "khronos-Suzanne",
+    "model": "Suzanne/glTF/Suzanne.gltf",
+    "orbit": {
+      "radius": 3
+    }
+  },
+  {
+    "name": "khronos-SpecGlossVsMetalRough",
+    "model": "SpecGlossVsMetalRough/glTF-Binary/SpecGlossVsMetalRough.glb",
+    "orbit": {
+      "radius": 0.5
+    }
+  },
+  {
+    "name": "khronos-GlassHurricaneCandleHolder",
+    "model": "GlassHurricaneCandleHolder/glTF-Binary/GlassHurricaneCandleHolder.glb",
+    "target": {
+      "y": 0.13
+    },
+    "orbit": {
+      "radius": 0.75
+    }
+  },
+  {
+    "name": "khronos-GlassVaseFlowers",
+    "model": "GlassVaseFlowers/glTF-Binary/GlassVaseFlowers.glb",
+    "target": {
+      "y": 0.1,
+      "x": 0.05
+    },
+    "orbit": {
+      "radius": 0.5
+    }
+  },
+  {
+    "name": "khronos-Sponza",
+    "model": "Sponza/glTF/Sponza.gltf",
+    "target": {
+      "y": 1
+    },
+    "orbit": {
+      "theta": 90,
+      "radius": 0
+    }
+  },
+  {
+    "name": "khronos-CesiumMan",
+    "model": "CesiumMan/glTF/CesiumMan.gltf",
+    "target": {
+      "y": 0.75
+    },
+    "orbit": {
+      "radius": 2
+    }
+  },
+  {
+    "name": "khronos-Cube",
+    "model": "Cube/glTF/Cube.gltf",
+    "orbit": {
+      "theta": 30,
+      "phi": 60,
+      "radius": 5
+    }
+  },
+  {
+    "name": "khronos-Duck",
+    "model": "Duck/glTF/Duck.gltf",
+    "target": {
+      "y": 0.86
+    },
+    "orbit": {
+      "radius": 2.7
+    }
+  },
+  {
+    "name": "khronos-MetalRoughSpheres",
+    "model": "MetalRoughSpheres/glTF/MetalRoughSpheres.gltf",
+    "orbit": {
+      "radius": 12
+    },
+    "renderSkybox": true
+  },
+  {
+    "name": "khronos-MetalRoughSpheres-HDR",
+    "model": "MetalRoughSpheres/glTF/MetalRoughSpheres.gltf",
+    "lighting": "spruit_sunrise_1k_HDR.hdr",
+    "orbit": {
+      "radius": 12
+    },
+    "renderSkybox": true
+  },
+  {
+    "name": "khronos-MetalRoughSpheresNoTextures",
+    "model": "MetalRoughSpheresNoTextures/glTF/MetalRoughSpheresNoTextures.gltf",
+    "orbit": {
+      "radius": 0
+    },
+    "target": {
+      "y": 0.003,
+      "x": 0.003,
+      "z": 0.01
+    },
+    "renderSkybox": true
+  },
+  {
+    "name": "khronos-EnvironmentTest",
+    "model": "EnvironmentTest/glTF/EnvironmentTest.gltf",
+    "dimensions": {
+      "width": 1024
+    },
+    "target": {
+      "y": 3.8
+    },
+    "orbit": {
+      "radius": 20
+    }
+  },
+  {
+    "name": "khronos-AlphaBlendModeTest",
+    "model": "AlphaBlendModeTest/glTF-Binary/AlphaBlendModeTest.glb",
+    "dimensions": {
+      "width": 1024,
+      "height": 512
+    },
+    "target": {
+      "y": 1.1
+    },
+    "orbit": {
+      "radius": 6
+    }
+  },
+  {
+    "name": "khronos-TransmissionTest",
+    "model": "TransmissionTest/glTF-Binary/TransmissionTest.glb",
+    "orbit": {
+      "radius": 1.59
+    },
+    "target": {
+      "x": -0.15,
+      "y": -0.15
+    },
+    "dimensions": {
+      "height": 700
+    }
+  },
+  {
+    "name": "khronos-TransmissionRoughnessTest",
+    "model": "TransmissionRoughnessTest/glTF-Binary/TransmissionRoughnessTest.glb",
+    "orbit": {
+      "radius": 1.1
+    },
+    "dimensions": {
+      "height": 300
+    },
+    "target": {
+      "y": -0.09
+    }
+  },
+  {
+    "name": "khronos-AttenuationTest",
+    "model": "AttenuationTest/glTF/AttenuationTest.gltf",
+    "dimensions": {
+      "width": 1024
+    },
+    "orbit": {
+      "radius": 22.0
+    }
+  },
+  {
+    "name": "khronos-SpecularTest",
+    "model": "SpecularTest/glTF-Binary/SpecularTest.glb",
+    "orbit": {
+      "radius": 1.1
+    },
+    "dimensions": {
+      "height": 600
+    },
+    "target": {
+      "x": -0.18
+    }
+  },
+  {
+    "name": "khronos-ClearCoatCarPaint",
+    "model": "ClearCoatCarPaint/glTF/ClearCoatCarPaint.gltf",
+    "target": {
+      "y": 0.5
+    },
+    "orbit": {
+      "radius": 2
+    }
+  },
+  {
+    "name": "khronos-ClearCoatTest",
+    "model": "ClearCoatTest/glTF/ClearCoatTest.gltf",
+    "orbit": {
+      "radius": 20
+    }
+  },
+  {
+    "name": "khronos-NegativeScaleTest",
+    "model": "NegativeScaleTest/glTF/NegativeScaleTest.gltf",
+    "orbit": {
+      "radius": 13
+    }
+  },
+  {
+    "name": "khronos-NormalTangentMirrorTest",
+    "model": "NormalTangentMirrorTest/glTF/NormalTangentMirrorTest.gltf",
+    "orbit": {
+      "radius": 4.25
+    }
+  },
+  {
+    "name": "khronos-NormalTangentTest",
+    "model": "NormalTangentTest/glTF/NormalTangentTest.gltf",
+    "orbit": {
+      "radius": 4.25
+    }
+  },
+  {
+    "name": "khronos-BoomBoxWithAxes",
+    "model": "BoomBoxWithAxes/glTF/BoomBoxWithAxes.gltf",
+    "target": {
+      "y": 0.01
+    },
+    "orbit": {
+      "radius": 0.05
+    }
+  },
+  {
+    "name": "khronos-BrainStem",
+    "model": "BrainStem/glTF-Binary/BrainStem.glb",
+    "target": {
+      "y": 0.9
+    },
+    "orbit": {
+      "radius": 3.6
+    }
+  },
+  {
+    "name": "khronos-CesiumMilkTruck",
+    "model": "CesiumMilkTruck/glTF/CesiumMilkTruck.gltf",
+    "target": {
+      "y": 1.3
+    },
+    "orbit": {
+      "radius": 7.8
+    }
+  },
+  {
+    "name": "khronos-Fox",
+    "model": "Fox/glTF/Fox.gltf",
+    "target": {
+      "y": 37,
+      "x": -35,
+      "z": 25
+    },
+    "orbit": {
+      "theta": -60,
+      "radius": 124
+    }
+  },
+  {
+    "name": "khronos-AnisotropyBarnLamp",
+    "model": "AnisotropyBarnLamp/glTF/AnisotropyBarnLamp.gltf",
+    "target": {
+      "y": -0.1
+    },
+    "orbit": {
+      "radius": 0.5
+    }
+  },
+  {
+    "name": "khronos-AnisotropyRotationTest",
+    "model": "AnisotropyRotationTest/glTF/AnisotropyRotationTest.gltf",
+    "orbit": {
+      "radius": 18
+    }
+  },
+  {
+    "name": "khronos-AnisotropyStrengthTest",
+    "model": "AnisotropyStrengthTest/glTF/AnisotropyStrengthTest.gltf",
+    "target": {
+      "y": 2.5
+    },
+    "orbit": {
+      "radius": 12
+    }
+  },
+  {
+    "name": "khronos-TextureTransformMultiTest",
+    "model": "TextureTransformMultiTest/glTF-Binary/TextureTransformMultiTest.glb",
+    "orbit": {
+      "radius": 2.9,
+      "phi": 98
+    },
+    "target": {
+      "y": -0.28
+    }
+  },
+  {
+    "name": "khronos-TextureEncodingTest",
+    "model": "TextureEncodingTest/glTF-Binary/TextureEncodingTest.glb",
+    "orbit": {
+      "radius": 13.0
+    },
+    "dimensions": {
+      "width": 1100
+    },
+    "target": {
+      "y": 0.3
+    }
+  },
+  {
+    "name": "khronos-RecursiveSkeletons",
+    "model": "RecursiveSkeletons/glTF-Binary/RecursiveSkeletons.glb",
+    "orbit": {
+      "radius": 120.0,
+      "phi": 5
+    },
+    "target": {
+      "y": 95
+    },
+    "dimensions": {
+      "width": 680
+    }
+  },
+  {
+    "name": "khronos-TextureLinearInterpolationTest",
+    "model": "TextureLinearInterpolationTest/glTF-Binary/TextureLinearInterpolationTest.glb",
+    "orbit": {
+      "radius": 6.6
+    },
+    "target": {
+      "y": 0.5
+    }
+  },
+  {
+    "name": "khronos-TwoSidedPlane",
+    "model": "TwoSidedPlane/glTF/TwoSidedPlane.gltf",
+    "orbit": {
+      "phi": 60,
+      "radius": 3.5
+    }
+  },
+  {
+    "name": "khronos-RiggedFigure",
+    "model": "RiggedFigure/glTF/RiggedFigure.gltf",
+    "target": {
+      "y": 0.75
+    },
+    "orbit": {
+      "radius": 2
+    }
+  },
+  {
+    "name": "khronos-AnimatedCube",
+    "model": "AnimatedCube/glTF/AnimatedCube.gltf",
+    "orbit": {
+      "theta": 30,
+      "phi": 60,
+      "radius": 4.75
+    }
+  },
+  {
+    "name": "khronos-BoxAnimated",
+    "model": "BoxAnimated/glTF-Binary/BoxAnimated.glb",
+    "orbit": {
+      "theta": 30,
+      "phi": 60,
+      "radius": 2.38
+    }
+  },
+  {
+    "name": "khronos-InterpolationTest",
+    "model": "InterpolationTest/glTF-Binary/InterpolationTest.glb",
+    "target": {
+      "y": 2.9
+    },
+    "orbit": {
+      "radius": 18.4
+    }
+  },
+  {
+    "name": "khronos-AnimatedMorphCube",
+    "model": "AnimatedMorphCube/glTF-Binary/AnimatedMorphCube.glb",
+    "orbit": {
+      "theta": 30,
+      "phi": 60,
+      "radius": 4.75
+    }
+  },
+  {
+    "name": "khronos-OrientationTest",
+    "model": "OrientationTest/glTF/OrientationTest.gltf",
+    "orbit": {
+      "theta": 30,
+      "phi": 60,
+      "radius": 23
+    }
+  },
+  {
+    "name": "khronos-AnimatedTriangle",
+    "model": "AnimatedTriangle/glTF/AnimatedTriangle.gltf",
+    "target": {
+      "x": 0.5,
+      "y": 0.5
+    },
+    "orbit": {
+      "radius": 1.5
+    }
+  },
+  {
+    "name": "khronos-Box",
+    "model": "Box/glTF-Binary/Box.glb",
+    "orbit": {
+      "theta": 30,
+      "phi": 60,
+      "radius": 2.38
+    }
+  },
+  {
+    "name": "khronos-BoxInterleaved",
+    "model": "BoxInterleaved/glTF-Binary/BoxInterleaved.glb",
+    "orbit": {
+      "theta": 30,
+      "phi": 60,
+      "radius": 2.38
+    }
+  },
+  {
+    "name": "khronos-BoxTextured",
+    "model": "BoxTextured/glTF-Binary/BoxTextured.glb",
+    "orbit": {
+      "theta": 30,
+      "phi": 60,
+      "radius": 2.38
+    }
+  },
+  {
+    "name": "khronos-BoxTexturedNonPowerOfTwo",
+    "model": "BoxTexturedNonPowerOfTwo/glTF-Binary/BoxTexturedNonPowerOfTwo.glb",
+    "orbit": {
+      "theta": 30,
+      "phi": 60,
+      "radius": 2.38
+    }
+  },
+  {
+    "name": "khronos-BoxVertexColors",
+    "model": "BoxVertexColors/glTF/BoxVertexColors.gltf",
+    "orbit": {
+      "theta": 30,
+      "phi": 60,
+      "radius": 3
+    }
+  },
+  {
+    "name": "khronos-SimpleSkin",
+    "model": "SimpleSkin/glTF/SimpleSkin.gltf",
+    "orbit": {
+      "radius": 2.5
+    },
+    "target": {
+      "y": 1
+    },
+    "dimensions": {
+      "width": 400
+    }
+  },
+  {
+    "name": "khronos-MorphPrimitivesTest",
+    "model": "MorphPrimitivesTest/glTF-Binary/MorphPrimitivesTest.glb",
+    "dimensions": {
+      "width": 1024,
+      "height": 512
+    },
+    "orbit": {
+      "phi": 60,
+      "radius": 1.2
+    }
+  },
+  {
+    "name": "khronos-MorphStressTest",
+    "model": "MorphStressTest/glTF/MorphStressTest.gltf",
+    "dimensions": {
+      "height": 300
+    },
+    "orbit": {
+      "radius": 2.5
+    }
+  },
+  {
+    "name": "khronos-MultiUVTest",
+    "model": "MultiUVTest/glTF/MultiUVTest.gltf",
+    "orbit": {
+      "radius": 4.25
+    }
+  },
+  {
+    "name": "khronos-RiggedSimple",
+    "model": "RiggedSimple/glTF/RiggedSimple.gltf",
+    "dimensions": {
+      "width": 512
+    },
+    "orbit": {
+      "theta": 90,
+      "radius": 13
+    }
+  },
+  {
+    "name": "khronos-SimpleMeshes",
+    "model": "SimpleMeshes/glTF/SimpleMeshes.gltf",
+    "dimensions": {
+      "height": 512
+    },
+    "target": {
+      "x": 1
+    },
+    "orbit": {
+      "radius": 3
+    }
+  },
+  {
+    "name": "khronos-SimpleMorph",
+    "model": "SimpleMorph/glTF/SimpleMorph.gltf",
+    "target": {
+      "x": 0.5,
+      "y": 1.2
+    },
+    "orbit": {
+      "radius": 3.5
+    }
+  },
+  {
+    "name": "khronos-SimpleSparseAccessor",
+    "model": "SimpleSparseAccessor/glTF/SimpleSparseAccessor.gltf",
+    "target": {
+      "x": 3,
+      "y": 2
+    },
+    "orbit": {
+      "radius": 9
+    }
+  },
+  {
+    "name": "khronos-TextureCoordinateTest",
+    "model": "TextureCoordinateTest/glTF-Binary/TextureCoordinateTest.glb",
+    "orbit": {
+      "radius": 4
+    }
+  },
+  {
+    "name": "khronos-TextureSettingsTest",
+    "model": "TextureSettingsTest/glTF-Binary/TextureSettingsTest.glb",
+    "orbit": {
+      "radius": 15
+    }
+  },
+  {
+    "name": "khronos-TextureTransformTest",
+    "model": "TextureTransformTest/glTF/TextureTransformTest.gltf",
+    "orbit": {
+      "radius": 4
+    }
+  },
+  {
+    "name": "khronos-Triangle",
+    "model": "Triangle/glTF/Triangle.gltf",
+    "target": {
+      "x": 0.5,
+      "y": 0.5
+    },
+    "orbit": {
+      "radius": 1.5
+    }
+  },
+  {
+    "name": "khronos-TriangleWithoutIndices",
+    "model": "TriangleWithoutIndices/glTF/TriangleWithoutIndices.gltf",
+    "target": {
+      "x": 0.5,
+      "y": 0.5
+    },
+    "orbit": {
+      "radius": 1.5
+    }
+  },
+  {
+    "name": "khronos-UnlitTest",
+    "model": "UnlitTest/glTF/UnlitTest.gltf",
+    "orbit": {
+      "radius": 7
+    }
+  },
+  {
+    "name": "khronos-VertexColorTest",
+    "model": "VertexColorTest/glTF/VertexColorTest.gltf",
+    "orbit": {
+      "radius": 4
+    }
+  },
+  {
+    "name": "DirectionalLightTest",
+    "model": "EnvironmentTest/glTF/EnvironmentTest.gltf",
+    "lighting": "spot1Lux.hdr",
+    "dimensions": {
+      "width": 1024
+    },
+    "target": {
+      "y": 3.8
+    },
+    "orbit": {
+      "radius": 20
+    },
+    "renderSkybox": true
+  },
+  {
+    "name": "x-AnisotropyDiscTest",
+    "model": "AnisotropyDiscTest/glTF/AnisotropyDiscTest.gltf",
+    "orbit": {
+      "radius": 3.23,
+      "theta": 0,
+      "phi": 90
+    },
+    "dimensions": {
+      "width": 1168,
+      "height": 482
+    },
+    "target": {
+      "x": -0.53,
+      "y": 1.38,
+      "z": 0.0005
+    }
+  },
+  {
+    "name": "x-CarbonFibre",
+    "model": "CarbonFibre/glTF/CarbonFibre.gltf",
+    "orbit": {
+      "radius": 1.77,
+      "theta": 25,
+      "phi": 75
+    },
+    "dimensions": {
+      "width": 750,
+      "height": 750
+    },
+    "target": {
+      "x": 0,
+      "y": 0.5,
+      "z": 0
+    },
+    "verticalFoV": 38
+  },
+  {
+    "name": "x-CarConcept",
+    "model": "CarConcept/glTF/CarConcept.gltf",
+    "orbit": {
+      "radius": 5.41,
+      "theta": 25,
+      "phi": 65
+    },
+    "dimensions": {
+      "width": 874,
+      "height": 644
+    },
+    "target": {
+      "x": -0.2303,
+      "y": 0.0963,
+      "z": 0.4188
+    },
+    "verticalFoV": 35
+  },
+  {
+    "name": "x-ChairDamaskPurplegold",
+    "model": "ChairDamaskPurplegold/glTF/ChairDamaskPurplegold.gltf",
+    "orbit": {
+      "radius": 1.44,
+      "theta": 25,
+      "phi": 75
+    },
+    "dimensions": {
+      "width": 740,
+      "height": 760
+    },
+    "target": {
+      "x": -0.0008,
+      "y": 0.343,
+      "z": 0.0087
+    }
+  },
+  {
+    "name": "x-ChronographWatch",
+    "model": "ChronographWatch/glTF/ChronographWatch.gltf",
+    "orbit": {
+      "radius": 11.4,
+      "theta": 25,
+      "phi": 75
+    },
+    "dimensions": {
+      "width": 684,
+      "height": 822
+    },
+    "target": {
+      "x": -0.6523,
+      "y": -0.1609,
+      "z": -1.4177
+    },
+    "verticalFoV": 35
+  },
+  {
+    "name": "x-ClearcoatWicker",
+    "model": "ClearcoatWicker/glTF/ClearcoatWicker.gltf",
+    "orbit": {
+      "radius": 1.77,
+      "theta": 25,
+      "phi": 75
+    },
+    "dimensions": {
+      "width": 750,
+      "height": 750
+    },
+    "target": {
+      "x": 0,
+      "y": 0.5,
+      "z": 0
+    },
+    "verticalFoV": 38
+  },
+  {
+    "name": "x-CommercialRefrigerator",
+    "model": "CommercialRefrigerator/glTF/CommercialRefrigerator.gltf",
+    "orbit": {
+      "radius": 3.36,
+      "theta": 25,
+      "phi": 75
+    },
+    "dimensions": {
+      "width": 556,
+      "height": 1012
+    },
+    "target": {
+      "x": -0.0381,
+      "y": 1.09,
+      "z": 0.032
+    }
+  },
+  {
+    "name": "x-CompareAlphaCoverage",
+    "model": "CompareAlphaCoverage/glTF/CompareAlphaCoverage.gltf",
+    "orbit": {
+      "radius": 1.76,
+      "theta": 0,
+      "phi": 90
+    },
+    "dimensions": {
+      "width": 1342,
+      "height": 420
+    },
+    "target": {
+      "x": -0.0012,
+      "y": 0.128,
+      "z": -0.0076
+    }
+  },
+  {
+    "name": "x-CompareAmbientOcclusion",
+    "model": "CompareAmbientOcclusion/glTF/CompareAmbientOcclusion.gltf",
+    "orbit": {
+      "radius": 0.656,
+      "theta": 0,
+      "phi": 90
+    },
+    "dimensions": {
+      "width": 978,
+      "height": 574
+    },
+    "target": {
+      "x": -0.0004,
+      "y": 0.0765,
+      "z": 0.0352
+    }
+  },
+  {
+    "name": "x-CompareAnisotropy",
+    "model": "CompareAnisotropy/glTF/CompareAnisotropy.gltf",
+    "orbit": {
+      "radius": 3.49,
+      "theta": 0,
+      "phi": 70
+    },
+    "dimensions": {
+      "width": 984,
+      "height": 572
+    },
+    "target": {
+      "x": 0,
+      "y": 0.5,
+      "z": 0
+    },
+    "verticalFoV": 25
+  },
+  {
+    "name": "x-CompareBaseColor",
+    "model": "CompareBaseColor/glTF/CompareBaseColor.gltf",
+    "orbit": {
+      "radius": 4.62,
+      "theta": 0,
+      "phi": 90
+    },
+    "dimensions": {
+      "width": 1138,
+      "height": 494
+    },
+    "target": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
+    "verticalFoV": 20
+  },
+  {
+    "name": "x-CompareClearcoat",
+    "model": "CompareClearcoat/glTF/CompareClearcoat.gltf",
+    "orbit": {
+      "radius": 4.62,
+      "theta": 0,
+      "phi": 90
+    },
+    "dimensions": {
+      "width": 1138,
+      "height": 494
+    },
+    "target": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
+    "verticalFoV": 20
+  },
+  {
+    "name": "x-CompareDispersion",
+    "model": "CompareDispersion/glTF/CompareDispersion.gltf",
+    "orbit": {
+      "radius": 2.57,
+      "theta": 0,
+      "phi": 90
+    },
+    "dimensions": {
+      "width": 1060,
+      "height": 530
+    },
+    "target": {
+      "x": 0,
+      "y": -0.0065,
+      "z": -0.1577
+    },
+    "verticalFoV": 30
+  },
+  {
+    "name": "x-CompareEmissiveStrength",
+    "model": "CompareEmissiveStrength/glTF/CompareEmissiveStrength.gltf",
+    "orbit": {
+      "radius": 1.84,
+      "theta": 0,
+      "phi": 90
+    },
+    "dimensions": {
+      "width": 1110,
+      "height": 506
+    },
+    "target": {
+      "x": 0,
+      "y": 0.0003,
+      "z": 0
+    },
+    "verticalFoV": 35
+  },
+  {
+    "name": "x-CompareIor",
+    "model": "CompareIor/glTF/CompareIor.gltf",
+    "orbit": {
+      "radius": 2.47,
+      "theta": 0,
+      "phi": 90
+    },
+    "dimensions": {
+      "width": 1098,
+      "height": 512
+    },
+    "target": {
+      "x": 0,
+      "y": 0,
+      "z": -0.25
+    },
+    "verticalFoV": 30
+  },
+  {
+    "name": "x-CompareIridescence",
+    "model": "CompareIridescence/glTF/CompareIridescence.gltf",
+    "orbit": {
+      "radius": 1.75,
+      "theta": 0,
+      "phi": 90
+    },
+    "dimensions": {
+      "width": 1086,
+      "height": 518
+    },
+    "target": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    }
+  },
+  {
+    "name": "x-CompareMetallic",
+    "model": "CompareMetallic/glTF/CompareMetallic.gltf",
+    "orbit": {
+      "radius": 1.75,
+      "theta": 0,
+      "phi": 90
+    },
+    "dimensions": {
+      "width": 1086,
+      "height": 518
+    },
+    "target": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    }
+  },
+  {
+    "name": "x-CompareNormal",
+    "model": "CompareNormal/glTF/CompareNormal.gltf",
+    "orbit": {
+      "radius": 1.72,
+      "theta": 0,
+      "phi": 90
+    },
+    "dimensions": {
+      "width": 1098,
+      "height": 512
+    },
+    "target": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    }
+  },
+  {
+    "name": "x-CompareRoughness",
+    "model": "CompareRoughness/glTF/CompareRoughness.gltf",
+    "orbit": {
+      "radius": 1.75,
+      "theta": 0,
+      "phi": 90
+    },
+    "dimensions": {
+      "width": 1086,
+      "height": 518
+    },
+    "target": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    }
+  },
+  {
+    "name": "x-CompareSheen",
+    "model": "CompareSheen/glTF/CompareSheen.gltf",
+    "orbit": {
+      "radius": 1.75,
+      "theta": 0,
+      "phi": 90
+    },
+    "dimensions": {
+      "width": 1086,
+      "height": 518
+    },
+    "target": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    }
+  },
+  {
+    "name": "x-CompareSpecular",
+    "model": "CompareSpecular/glTF/CompareSpecular.gltf",
+    "orbit": {
+      "radius": 1.74,
+      "theta": 0,
+      "phi": 90
+    },
+    "dimensions": {
+      "width": 1074,
+      "height": 524
+    },
+    "target": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    }
+  },
+  {
+    "name": "x-CompareTransmission",
+    "model": "CompareTransmission/glTF/CompareTransmission.gltf",
+    "orbit": {
+      "radius": 2.57,
+      "theta": 0,
+      "phi": 90
+    },
+    "dimensions": {
+      "width": 1060,
+      "height": 530
+    },
+    "target": {
+      "x": 0,
+      "y": -0.0065,
+      "z": -0.1577
+    },
+    "verticalFoV": 30
+  },
+  {
+    "name": "x-CompareVolume",
+    "model": "CompareVolume/glTF/CompareVolume.gltf",
+    "orbit": {
+      "radius": 2.57,
+      "theta": 0,
+      "phi": 90
+    },
+    "dimensions": {
+      "width": 1060,
+      "height": 530
+    },
+    "target": {
+      "x": 0,
+      "y": -0.0065,
+      "z": -0.1577
+    },
+    "verticalFoV": 30
+  },
+  {
+    "name": "x-CubeVisibility",
+    "model": "CubeVisibility/glTF/CubeVisibility.gltf",
+    "orbit": {
+      "radius": 5.47,
+      "theta": 0,
+      "phi": 90
+    },
+    "dimensions": {
+      "width": 750,
+      "height": 750
+    },
+    "target": {
+      "x": 0,
+      "y": 1.5,
+      "z": 0
+    }
+  },
+  {
+    "name": "x-DiffuseTransmissionPlant",
+    "model": "DiffuseTransmissionPlant/glTF/DiffuseTransmissionPlant.gltf",
+    "orbit": {
+      "radius": 1.62,
+      "theta": 25,
+      "phi": 75
+    },
+    "dimensions": {
+      "width": 684,
+      "height": 822
+    },
+    "target": {
+      "x": -0.0461,
+      "y": 0.421,
+      "z": -0.0916
+    }
+  },
+  {
+    "name": "x-DiffuseTransmissionTeacup",
+    "model": "DiffuseTransmissionTeacup/glTF/DiffuseTransmissionTeacup.gltf",
+    "orbit": {
+      "radius": 0.273,
+      "theta": -50,
+      "phi": 65
+    },
+    "dimensions": {
+      "width": 772,
+      "height": 730
+    },
+    "target": {
+      "x": 0,
+      "y": 0.0345,
+      "z": -0.0026
+    }
+  },
+  {
+    "name": "x-DiffuseTransmissionTest",
+    "model": "DiffuseTransmissionTest/glTF/DiffuseTransmissionTest.gltf",
+    "orbit": {
+      "radius": 6.68,
+      "theta": 0,
+      "phi": 90
+    },
+    "dimensions": {
+      "width": 948,
+      "height": 592
+    },
+    "target": {
+      "x": 1.18,
+      "y": -1.57,
+      "z": -0.25
+    }
+  },
+  {
+    "name": "x-DirectionalLight",
+    "model": "DirectionalLight/glTF/DirectionalLight.gltf",
+    "orbit": {
+      "radius": 0.853,
+      "theta": 0,
+      "phi": 90
+    },
+    "dimensions": {
+      "width": 1342,
+      "height": 420
+    },
+    "target": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    }
+  },
+  {
+    "name": "x-DispersionTest",
+    "model": "DispersionTest/glTF/DispersionTest.gltf",
+    "orbit": {
+      "radius": 0.154,
+      "theta": 0,
+      "phi": 90
+    },
+    "dimensions": {
+      "width": 1008,
+      "height": 558
+    },
+    "target": {
+      "x": -0.0307,
+      "y": 0.0135,
+      "z": 0
+    },
+    "verticalFoV": 40
+  },
+  {
+    "name": "x-DragonDispersion",
+    "model": "DragonDispersion/glTF/DragonDispersion.gltf",
+    "orbit": {
+      "radius": 5,
+      "theta": 0,
+      "phi": 90
+    },
+    "dimensions": {
+      "width": 768,
+      "height": 768
+    },
+    "target": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    }
+  },
+  {
+    "name": "x-GlassBrokenWindow",
+    "model": "GlassBrokenWindow/glTF/GlassBrokenWindow.gltf",
+    "orbit": {
+      "radius": 0.661,
+      "theta": 0,
+      "phi": 90
+    },
+    "dimensions": {
+      "width": 744,
+      "height": 756
+    },
+    "target": {
+      "x": 0.0019,
+      "y": 0.258,
+      "z": 0.0006
+    }
+  },
+  {
+    "name": "x-IORTestGrid",
+    "model": "IORTestGrid/glTF/IORTestGrid.gltf",
+    "orbit": {
+      "radius": 0.991,
+      "theta": 0,
+      "phi": 90
+    },
+    "dimensions": {
+      "width": 718,
+      "height": 784
+    },
+    "target": {
+      "x": -0.0677,
+      "y": 0.0467,
+      "z": 0.0113
+    }
+  },
+  {
+    "name": "x-IridescenceAbalone",
+    "model": "IridescenceAbalone/glTF/IridescenceAbalone.gltf",
+    "orbit": {
+      "radius": 0.361,
+      "theta": 25,
+      "phi": 75
+    },
+    "dimensions": {
+      "width": 780,
+      "height": 722
+    },
+    "target": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    }
+  },
+  {
+    "name": "x-LightVisibility",
+    "model": "LightVisibility/glTF/LightVisibility.gltf",
+    "orbit": {
+      "radius": 3.73,
+      "theta": 0,
+      "phi": 90
+    },
+    "dimensions": {
+      "width": 1060,
+      "height": 530
+    },
+    "target": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    }
+  },
+  {
+    "name": "x-MandarinOrange",
+    "model": "MandarinOrange/glTF/MandarinOrange.gltf",
+    "orbit": {
+      "radius": 0.0273,
+      "theta": 25,
+      "phi": 75
+    },
+    "dimensions": {
+      "width": 664,
+      "height": 848
+    },
+    "target": {
+      "x": -0.0003,
+      "y": -0.0004,
+      "z": 0.0034
+    }
+  },
+  {
+    "name": "x-MeshoptCubeTest",
+    "model": "MeshoptCubeTest/glTF/MeshoptCubeTest.gltf",
+    "orbit": {
+      "radius": 26.2,
+      "theta": 0,
+      "phi": 90
+    },
+    "dimensions": {
+      "width": 804,
+      "height": 700
+    },
+    "target": {
+      "x": 5.75,
+      "y": 9.5,
+      "z": 0
+    }
+  },
+  {
+    "name": "x-MeshPrimitiveModes",
+    "model": "MeshPrimitiveModes/glTF/MeshPrimitiveModes.gltf",
+    "orbit": {
+      "radius": 9.96,
+      "theta": 0,
+      "phi": 90
+    },
+    "dimensions": {
+      "width": 634,
+      "height": 886
+    },
+    "target": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    }
+  },
+  {
+    "name": "x-NodeVisibilityTest",
+    "model": "NodeVisibilityTest/glTF/NodeVisibilityTest.gltf",
+    "orbit": {
+      "radius": 6.24,
+      "theta": 0,
+      "phi": 90
+    },
+    "dimensions": {
+      "width": 1342,
+      "height": 420
+    },
+    "target": {
+      "x": 8,
+      "y": -0.5,
+      "z": 0.01
+    }
+  },
+  {
+    "name": "x-PlaysetLightTest",
+    "model": "PlaysetLightTest/glTF/PlaysetLightTest.gltf",
+    "orbit": {
+      "radius": 2.18,
+      "theta": 25,
+      "phi": 60
+    },
+    "dimensions": {
+      "width": 832,
+      "height": 676
+    },
+    "target": {
+      "x": -0.0035,
+      "y": 0.159,
+      "z": -0.0161
+    }
+  },
+  {
+    "name": "x-PointLightIntensityTest",
+    "model": "PointLightIntensityTest/glTF/PointLightIntensityTest.gltf",
+    "orbit": {
+      "radius": 6.15,
+      "theta": 0,
+      "phi": 90
+    },
+    "dimensions": {
+      "width": 870,
+      "height": 648
+    },
+    "target": {
+      "x": 0,
+      "y": -1.41,
+      "z": 0.015
+    }
+  },
+  {
+    "name": "x-PotOfCoals",
+    "model": "PotOfCoals/glTF/PotOfCoals.gltf",
+    "orbit": {
+      "radius": 0.157,
+      "theta": 25,
+      "phi": 45
+    },
+    "dimensions": {
+      "width": 768,
+      "height": 732
+    },
+    "target": {
+      "x": 0,
+      "y": 0.0253,
+      "z": 0
+    }
+  },
+  {
+    "name": "x-ScatteringSkull",
+    "model": "ScatteringSkull/glTF/ScatteringSkull.gltf",
+    "orbit": {
+      "radius": 0.568,
+      "theta": 30,
+      "phi": 80
+    },
+    "dimensions": {
+      "width": 732,
+      "height": 768
+    },
+    "target": {
+      "x": 0,
+      "y": 0.126,
+      "z": 0
+    }
+  },
+  {
+    "name": "x-SheenTestGrid",
+    "model": "SheenTestGrid/glTF/SheenTestGrid.gltf",
+    "orbit": {
+      "radius": 0.867,
+      "theta": 0,
+      "phi": 90
+    },
+    "dimensions": {
+      "width": 884,
+      "height": 636
+    },
+    "target": {
+      "x": -0.176,
+      "y": 0.0021,
+      "z": 0.0113
+    }
+  },
+  {
+    "name": "x-SheenWoodLeatherSofa",
+    "model": "SheenWoodLeatherSofa/glTF/SheenWoodLeatherSofa.gltf",
+    "orbit": {
+      "radius": 2.13,
+      "theta": 25,
+      "phi": 75
+    },
+    "dimensions": {
+      "width": 1042,
+      "height": 540
+    },
+    "target": {
+      "x": 0.2109,
+      "y": 0.3436,
+      "z": -0.0495
+    }
+  },
+  {
+    "name": "x-SimpleInstancing",
+    "model": "SimpleInstancing/glTF/SimpleInstancing.gltf",
+    "orbit": {
+      "radius": 36,
+      "theta": 25,
+      "phi": 75
+    },
+    "dimensions": {
+      "width": 766,
+      "height": 734
+    },
+    "target": {
+      "x": 5.6095,
+      "y": 4.394,
+      "z": 6.6569
+    },
+    "verticalFoV": 30
+  },
+  {
+    "name": "x-SimpleMaterial",
+    "model": "SimpleMaterial/glTF/SimpleMaterial.gltf",
+    "orbit": {
+      "radius": 1.24,
+      "theta": 0,
+      "phi": 90
+    },
+    "dimensions": {
+      "width": 750,
+      "height": 750
+    },
+    "target": {
+      "x": 0.5,
+      "y": 0.5,
+      "z": 0
+    }
+  },
+  {
+    "name": "x-SimpleTexture",
+    "model": "SimpleTexture/glTF/SimpleTexture.gltf",
+    "orbit": {
+      "radius": 1.24,
+      "theta": 0,
+      "phi": 90
+    },
+    "dimensions": {
+      "width": 750,
+      "height": 750
+    },
+    "target": {
+      "x": 0.5,
+      "y": 0.5,
+      "z": 0
+    }
+  },
+  {
+    "name": "x-SpecularSilkPouf",
+    "model": "SpecularSilkPouf/glTF/SpecularSilkPouf.gltf",
+    "orbit": {
+      "radius": 1.1,
+      "theta": 25,
+      "phi": 45
+    },
+    "dimensions": {
+      "width": 782,
+      "height": 720
+    },
+    "target": {
+      "x": 0,
+      "y": 0.0989,
+      "z": 0
+    }
+  },
+  {
+    "name": "x-StainedGlassLamp",
+    "model": "StainedGlassLamp/glTF/StainedGlassLamp.gltf",
+    "orbit": {
+      "radius": 1.21,
+      "theta": 25,
+      "phi": 75
+    },
+    "dimensions": {
+      "width": 634,
+      "height": 888
+    },
+    "target": {
+      "x": 0,
+      "y": 0.344,
+      "z": 0
+    }
+  },
+  {
+    "name": "x-SunglassesKhronos",
+    "model": "SunglassesKhronos/glTF/SunglassesKhronos.gltf",
+    "orbit": {
+      "radius": 0.183,
+      "theta": 25,
+      "phi": 54
+    },
+    "dimensions": {
+      "width": 998,
+      "height": 564
+    },
+    "target": {
+      "x": -0.0072,
+      "y": -0.0034,
+      "z": -0.0523
+    },
+    "verticalFoV": 40
+  },
+  {
+    "name": "x-TrafficCone",
+    "model": "TrafficCone/glTF/TrafficCone.gltf",
+    "orbit": {
+      "radius": 1.02,
+      "theta": 0,
+      "phi": 90
+    },
+    "dimensions": {
+      "width": 1076,
+      "height": 522
+    },
+    "target": {
+      "x": 0,
+      "y": -0.0366,
+      "z": 0
+    }
+  },
+  {
+    "name": "x-TransmissionOrderTest",
+    "model": "TransmissionOrderTest/glTF/TransmissionOrderTest.gltf",
+    "orbit": {
+      "radius": 6.45,
+      "theta": 0,
+      "phi": 90
+    },
+    "dimensions": {
+      "width": 972,
+      "height": 578
+    },
+    "target": {
+      "x": -0.4364,
+      "y": 1.254,
+      "z": 0
+    },
+    "verticalFoV": 35
+  },
+  {
+    "name": "x-TransmissionThinwallTestGrid",
+    "model": "TransmissionThinwallTestGrid/glTF/TransmissionThinwallTestGrid.gltf",
+    "orbit": {
+      "radius": 11.9,
+      "theta": 0,
+      "phi": 90
+    },
+    "dimensions": {
+      "width": 1102,
+      "height": 510
+    },
+    "target": {
+      "x": -1.66,
+      "y": 4.34,
+      "z": 0.226
+    }
+  },
+  {
+    "name": "x-UnicodeTest",
+    "model": "Unicode❤♻Test/glTF/Unicode❤♻Test.gltf",
+    "orbit": {
+      "radius": 1.24,
+      "theta": 0,
+      "phi": 90
+    },
+    "dimensions": {
+      "width": 750,
+      "height": 750
+    },
+    "target": {
+      "x": 0.5,
+      "y": 0.5,
+      "z": 0
+    }
+  },
+  {
+    "name": "x-USDShaderBallForGltf",
+    "model": "USDShaderBallForGltf/glTF/USDShaderBallForGltf.gltf",
+    "orbit": {
+      "radius": 0.184,
+      "theta": 25,
+      "phi": 75
+    },
+    "dimensions": {
+      "width": 738,
+      "height": 762
+    },
+    "target": {
+      "x": 0,
+      "y": 0.041,
+      "z": 0
+    }
+  },
+  {
+    "name": "x-WaterBottle",
+    "model": "WaterBottle/glTF/WaterBottle.gltf",
+    "orbit": {
+      "radius": 0.396,
+      "theta": 25,
+      "phi": 75
+    },
+    "dimensions": {
+      "width": 556,
+      "height": 1012
+    },
+    "target": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    }
+  }
+]

@@ -1,7 +1,7 @@
 import type { Color, DataTexture, PerspectiveCamera, Scene, ToneMapping, Vector3 } from 'three';
 import type { GLTF } from 'three/addons/loaders/GLTFLoader.js';
 
-/** Asset access for scene creation: paths are relative to `submodules/three.js/examples/`. */
+/** Asset access for scene creation: paths are relative to `submodules/three.js/examples/`, or to the repository root with a `@/` prefix. */
 export interface SceneContext {
   loadGLTF(path: string): Promise<GLTF>;
   /** Radiance .hdr as an equirect-mapped DataTexture (HDRLoader defaults). */

@@ -11,6 +11,7 @@ import {
   ACESFilmicToneMapping,
   AmbientLight,
   Color,
+  DataTexture,
   DirectionalLight,
   FloatType,
   NoToneMapping,
@@ -18,7 +19,7 @@ import {
   Vector3,
   WebGLRenderer,
 } from 'three';
-import type { DataTexture, Object3D, ToneMapping } from 'three';
+import type { Object3D, ToneMapping } from 'three';
 import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
 import { EXRExporter } from 'three/addons/exporters/EXRExporter.js';
 import { EXRLoader } from 'three/addons/loaders/EXRLoader.js';
@@ -250,7 +251,9 @@ export async function renderBlender(setup: SceneSetup, options: BlenderRenderOpt
   const dir = await mkdtemp(path.join(tmpdir(), 'three-gpu-pathtracer-fidelity-blender-'));
   try {
     const renderer = new WebGLRenderer({ canvas });
-    const environment = environmentEquirect(renderer, setup);
+    // a baked setup.environment, else the scene's own equirect DataTexture (e.g. an HDR)
+    const environment =
+      environmentEquirect(renderer, setup) ?? (scene.environment instanceof DataTexture ? scene.environment : null);
     if (environment) await writeFile(path.join(dir, 'environment.exr'), await exportEquirect(environment));
     renderer.dispose();
     await writeFile(path.join(dir, 'scene.glb'), new Uint8Array(await exportGlb(setup)));

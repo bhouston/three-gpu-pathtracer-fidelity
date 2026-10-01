@@ -32,7 +32,9 @@ Workflow rules (issues, branches, Conventional Commits, PRs, required checks) ar
 
 ```
 submodules/three-gpu-pathtracer  bhouston/three-gpu-pathtracer: both path tracers (WebGL and WebGPU)
-submodules/three.js              bhouston/three.js: the single three.js build everything uses, and the example assets
+submodules/three.js              bhouston/three.js: the single three.js build everything uses
+submodules/glTF-Sample-Assets    KhronosGroup/glTF-Sample-Assets: the models of the khronos-* / x-* scenes
+assets/environments/             HDR lighting of those scenes (from KhronosGroup/glTF-Render-Fidelity-Generator)
 packages/scenes     @pathtracer-fidelity/scenes     renderer-agnostic scene definitions + registry (browser and node)
 packages/renderers  @pathtracer-fidelity/renderers  WebGL Legacy and WebGPU New adapters behind one LiveRenderer API
 packages/cli        @pathtracer-fidelity/cli        headless render / quality-gate (+ the Blender runner)
@@ -47,7 +49,11 @@ The workspace overrides `three` with `workspace:*`, so every package, and three-
 - `src/types.ts` holds the contract. A `SceneDefinition` has a `name`, `description`, `width`/`height` and an async
   `create(ctx)`, which returns a `SceneSetup`: the scene, camera, orbit `target`, tone mapping and `aoRadius`.
 - `src/index.ts` is the registry (`listSceneNames`, `getScene`). Scene families each live in their own file.
-- Assets (glTF, HDR) are loaded from paths relative to `submodules/three.js/examples/`.
+- Assets (glTF, HDR) are loaded from paths relative to `submodules/three.js/examples/`, or the repository root with a `@/` prefix.
+- `src/khronos.ts` builds the `khronos-*` and `x-*` scenes from `src/khronos-scenarios.json`: the scenarios of
+  three-gpu-pathtracer's `example/viewerTest.js` (Khronos glTF-Render-Fidelity-Generator `config.json` @ `deaaba0`, plus the
+  example's `extraScenarios.json`), camera and size included. The Khronos golden images are not used: every reference is
+  rendered here with Blender.
 - **To add a scene:** add a `SceneDefinition` to a family file (or a new one), spread it into the registry in
   `index.ts`, extend the family's `*.test.ts`, then render all three renderers.
 

@@ -9,3 +9,7 @@
 	branch = ss-fidelity
 	ignore = dirty
 	shallow = true
+[submodule "submodules/glTF-Sample-Assets"]
+	path = submodules/glTF-Sample-Assets
+	url = https://github.com/KhronosGroup/glTF-Sample-Assets.git
+	ignore = dirty

@@ -95,7 +95,12 @@ class NodeDRACOLoader extends DRACOLoader {
   }
 }
 
+/** The repository root: a `@/` asset path is relative to it, any other to `examplesDir`. */
+const repoRoot = fileURLToPath(new URL('../../../', import.meta.url));
+
 export function createNodeSceneContext(examplesDir = threeExamplesDir): SceneContext {
+  const resolveAsset = (assetPath: string) =>
+    assetPath.startsWith('@/') ? path.join(repoRoot, assetPath.slice(2)) : path.join(examplesDir, assetPath);
   (globalThis as { self?: unknown }).self ??= globalThis; // GLTFLoader reads self.URL
   (globalThis as { Worker?: unknown }).Worker ??= InlineWorker;
   // FileLoader (KTX2Loader's) reports stream progress
@@ -127,16 +132,14 @@ export function createNodeSceneContext(examplesDir = threeExamplesDir): SceneCon
 
   return {
     async loadGLTF(assetPath) {
-      const file = path.join(examplesDir, assetPath);
+      const file = resolveAsset(assetPath);
       return loader.parseAsync(
         new Uint8Array(await readFile(file)).buffer,
         `${pathToFileURL(path.dirname(file)).href}/`,
       );
     },
     async loadHDR(assetPath) {
-      return new HDRLoader().createDataTexture(
-        new Uint8Array(await readFile(path.join(examplesDir, assetPath))).buffer,
-      );
+      return new HDRLoader().createDataTexture(new Uint8Array(await readFile(resolveAsset(assetPath))).buffer);
     },
   };
 }

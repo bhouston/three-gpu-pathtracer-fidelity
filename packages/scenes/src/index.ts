@@ -2,7 +2,7 @@ import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { HDRLoader } from 'three/addons/loaders/HDRLoader.js';
 import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
-import { gltfExampleScenes } from './gltf-examples.js';
+import { khronosScenes } from './khronos.js';
 import { RGBAKTX2Loader } from './ktx2.js';
 import { giDiagnosticScenes } from './gi-diagnostics.js';
 import { ssgiScenes } from './ssgi.js';
@@ -12,7 +12,7 @@ export type * from './types.js';
 export { ANIMATED_POSE_TIME } from './ssgi.js';
 
 const scenes = new Map<string, SceneDefinition>(
-  [...ssgiScenes, ...gltfExampleScenes, ...giDiagnosticScenes].map((scene) => [scene.name, scene]),
+  [...ssgiScenes, ...khronosScenes, ...giDiagnosticScenes].map((scene) => [scene.name, scene]),
 );
 
 export function listSceneNames(): string[] {

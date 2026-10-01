@@ -3,5 +3,6 @@
   "compilerOptions": {
     "composite": true,
     "lib": ["ES2024", "DOM"]
-  }
+  },
+  "include": ["${configDir}/src/**/*", "${configDir}/src/**/*.json"]
 }
