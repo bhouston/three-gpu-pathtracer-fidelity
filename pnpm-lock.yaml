@@ -25,8 +25,8 @@ importers:
         specifier: ^4.1.10
         version: 4.1.11(vitest@4.1.11)
       fidelity-kit:
-        specifier: ^2.0.0
-        version: 2.0.0(@types/node@25.9.8)
+        specifier: ^2.1.0
+        version: 2.1.0(@types/node@25.9.8)
       husky:
         specifier: ^9.1.7
         version: 9.1.7
@@ -2109,8 +2109,8 @@ packages:
   fflate@0.8.3:
     resolution: {integrity: sha512-tbZNuJrLwGUp3zshBtdy4W+ORxZuIh8a5ilyIEQDC5rY1f3U20JMry0Ll3WBzU58EZKsEuJFXhb5gwv8CsPvgA==}
 
-  fidelity-kit@2.0.0:
-    resolution: {integrity: sha512-Yjucmsdikrfb4ycOwCRhjqKCRHWMxMCdORnFZRz+PennsxnEfqOZeoSgzc5O5XE88j01a6lVwh4UpnFWbM1ZtQ==}
+  fidelity-kit@2.1.0:
+    resolution: {integrity: sha512-zBjnMh2Fc+Iim2sCP/cvxY/wYVNwaJUoBA7LHJoFFuISAIVX11dABmP24bx1U6N8Jb4K9Ii9XJXFd9HBFw3UZQ==}
     hasBin: true
 
   file-entry-cache@11.1.5:
@@ -4918,7 +4918,7 @@ snapshots:
 
   fflate@0.8.3: {}
 
-  fidelity-kit@2.0.0(@types/node@25.9.8):
+  fidelity-kit@2.1.0(@types/node@25.9.8):
     dependencies:
       '@clidoc/core': 1.1.0
       '@clidoc/yargs': 1.1.0
