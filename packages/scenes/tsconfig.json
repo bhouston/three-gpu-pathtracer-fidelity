@@ -2,7 +2,9 @@
   "extends": "../../tsconfig.node.json",
   "compilerOptions": {
     "composite": true,
-    "lib": ["ES2024", "DOM"]
+    "lib": ["ES2024", "DOM"],
+    "allowJs": true,
+    "checkJs": false
   },
   "include": ["${configDir}/src/**/*", "${configDir}/src/**/*.json"]
 }

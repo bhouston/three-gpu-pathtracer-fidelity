@@ -19,29 +19,13 @@ import {
   Vector3,
 } from 'three';
 import type { Object3D } from 'three';
-import type { SceneContext, SceneDefinition, SceneEffects, SceneSetup } from './types.js';
+import type { SceneContext, SceneDefinition, SceneSetup } from './types.js';
 
 const WIDTH = 640;
 const HEIGHT = 480;
 
 /** Michelle.glb animation time (seconds) at which the pose is frozen. */
 export const ANIMATED_POSE_TIME = 1;
-
-const effects: SceneEffects = {
-  // Validated indoor preset; keep the asset-free diagnostic controls and world-space exterior settings separate.
-  ssgi: {
-    sliceCount: 8,
-    stepCount: 32,
-    radius: 32,
-    thickness: 4,
-    giIntensity: (Math.PI * Math.PI) / 2,
-  },
-  ssr: { maxDistance: 20 },
-  temporalDenoise: true,
-  toneMapping: NoToneMapping,
-  toneMappingExposure: 1,
-  frames: 128,
-};
 
 type Setup = 'basic' | 'rounded' | 'metallic' | 'animated';
 
@@ -161,7 +145,7 @@ async function createCornellBox(setup: Setup, ctx: SceneContext): Promise<SceneS
 
   scene.add(new AmbientLight('#0c0c0c'));
 
-  return { scene, camera, target, effects, aoRadius: 4 };
+  return { scene, camera, target, toneMapping: NoToneMapping, toneMappingExposure: 1 };
 }
 
 const descriptions: Record<Setup, string> = {

@@ -24,7 +24,8 @@
   },
   "dependencies": {
     "sharp": "^0.35.4",
-    "three": "workspace:*"
+    "three": "workspace:*",
+    "three-gpu-pathtracer": "workspace:*"
   },
   "devDependencies": {
     "@types/three": "^0.186.0"

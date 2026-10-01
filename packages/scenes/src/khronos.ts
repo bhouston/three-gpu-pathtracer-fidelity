@@ -57,8 +57,8 @@ async function createScenario(s: Scenario, width: number, height: number, ctx: S
     scene,
     camera,
     target,
-    effects: { temporalDenoise: false, toneMapping: ACESFilmicToneMapping, toneMappingExposure: 1, frames: 1 },
-    aoRadius: sphere.radius * 0.25,
+    toneMapping: ACESFilmicToneMapping,
+    toneMappingExposure: 1,
   };
 }
 

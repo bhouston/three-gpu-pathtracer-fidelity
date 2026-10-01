@@ -24,7 +24,6 @@ import { GLTFExporter } from 'three/addons/exporters/GLTFExporter.js';
 import { EXRExporter } from 'three/addons/exporters/EXRExporter.js';
 import { EXRLoader } from 'three/addons/loaders/EXRLoader.js';
 import { environmentEquirect, PATHTRACER_BOUNCES } from '@pathtracer-fidelity/renderers';
-import type { PassName } from '@pathtracer-fidelity/renderers';
 import type { GradientBackground, SceneSetup } from '@pathtracer-fidelity/scenes';
 
 const script = fileURLToPath(new URL('../blender/render.py', import.meta.url));
@@ -48,9 +47,6 @@ function macOSBlenderCandidates(): string[] {
 function blenderExecutable(): string {
   return process.env.BLENDER_EXECUTABLE || macOSBlenderCandidates()[0] || 'blender';
 }
-
-/** Cycles max bounces per pass: direct is first-hit lighting only (Cycles still MIS-samples lights and world). */
-const passBounces: Record<PassName, number> = { beauty: PATHTRACER_BOUNCES, direct: 0, ao: 0 };
 
 /** What primary rays that miss show: the environment itself, or a background composited under the render in node. */
 export type Background = 'environment' | GradientBackground;
@@ -230,7 +226,6 @@ function sceneBackground(setup: SceneSetup): Background {
 export interface BlenderRenderOptions {
   width: number;
   height: number;
-  pass: PassName;
   samples: number;
   /** Headless WebGL canvas, for baking the environment. */
   canvas: HTMLCanvasElement;
@@ -238,12 +233,8 @@ export interface BlenderRenderOptions {
 
 /** Renders the scene in Blender Cycles; returns RGBA8, top row first. */
 export async function renderBlender(setup: SceneSetup, options: BlenderRenderOptions): Promise<Uint8Array> {
-  const { width, height, pass, samples, canvas } = options;
-  if (pass === 'ao')
-    throw new Error(
-      'blender: the ao pass is not supported (Cycles has no equivalent to AmbientOcclusionMaterial here)',
-    );
-  const { camera, effects, scene } = setup;
+  const { width, height, samples, canvas } = options;
+  const { camera, scene } = setup;
   camera.aspect = width / height;
   camera.updateProjectionMatrix();
   const bg = sceneBackground(setup);
@@ -266,7 +257,7 @@ export async function renderBlender(setup: SceneSetup, options: BlenderRenderOpt
         : undefined,
       transparent: bg !== 'environment',
       samples,
-      bounces: passBounces[pass],
+      bounces: PATHTRACER_BOUNCES,
       width,
       height,
     };
@@ -281,7 +272,7 @@ export async function renderBlender(setup: SceneSetup, options: BlenderRenderOpt
     ]);
 
     const exr = new EXRLoader().setDataType(FloatType).parse(new Uint8Array(await readFile(job.output)).buffer);
-    return encodeLinear(exr.data as Float32Array, width, height, bg, effects.toneMapping, effects.toneMappingExposure);
+    return encodeLinear(exr.data as Float32Array, width, height, bg, setup.toneMapping, setup.toneMappingExposure);
   } finally {
     await rm(dir, { recursive: true, force: true });
   }

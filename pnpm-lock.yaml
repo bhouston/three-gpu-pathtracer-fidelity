@@ -116,6 +116,9 @@ importers:
       three:
         specifier: workspace:*
         version: link:../../submodules/three.js
+      three-gpu-pathtracer:
+        specifier: workspace:*
+        version: link:../../submodules/three-gpu-pathtracer
     devDependencies:
       '@types/three':
         specifier: ^0.186.0

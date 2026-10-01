@@ -15,9 +15,8 @@ describe('scene registry', () => {
 
   it.each(listSceneNames())('creates %s', async (name) => {
     const definition = getScene(name);
-    const { scene, camera, effects } = await definition.create(createNodeSceneContext());
+    const { scene, camera } = await definition.create(createNodeSceneContext());
     expect(camera.aspect).toBeCloseTo(definition.width / definition.height);
-    expect(effects.frames).toBeGreaterThan(0);
     let meshes = 0;
     scene.traverse((object) => {
       if ((object as { isMesh?: boolean }).isMesh) meshes++;

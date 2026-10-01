@@ -10,20 +10,10 @@ import {
   Scene,
   Vector3,
 } from 'three';
-import type { SceneDefinition, SceneEffects, SceneSetup, SSGIEffect } from './types.js';
+import type { SceneDefinition, SceneSetup } from './types.js';
 
 const WIDTH = 480;
 const HEIGHT = 360;
-
-function effects(overrides: Partial<SSGIEffect> = {}): SceneEffects {
-  return {
-    ssgi: { sliceCount: 2, stepCount: 8, giIntensity: Math.PI ** 2 / 2, ...overrides },
-    temporalDenoise: true,
-    toneMapping: NoToneMapping,
-    toneMappingExposure: 1,
-    frames: 128,
-  };
-}
 
 function material(albedo: number, emission = 0): MeshPhysicalMaterial {
   // Numeric RGB values are linear. IOR 1 minimizes the specular lobe; the path tracer still uses
@@ -60,7 +50,7 @@ function setup(fov = 65): SceneSetup {
   camera.position.set(0, 4, 4);
   const target = new Vector3(0, 0, 0);
   camera.lookAt(target);
-  return { scene, camera, target, effects: effects(), aoRadius: 4 };
+  return { scene, camera, target, toneMapping: NoToneMapping, toneMappingExposure: 1 };
 }
 
 function floor(scene: Scene, surface: MeshPhysicalMaterial): void {

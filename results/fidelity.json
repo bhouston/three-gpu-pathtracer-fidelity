@@ -1,13 +1,25 @@
 {
   "title": "three-gpu-pathtracer-fidelity",
   "renderers": [
-    { "id": "blender", "label": "Blender Cycles", "reference": true },
-    { "id": "webgl-legacy", "label": "WebGL Legacy", "reference": true },
-    { "id": "webgpu-new", "label": "WebGPU New" }
+    {
+      "id": "webgl-legacy",
+      "label": "WebGL Legacy",
+      "reference": true
+    },
+    {
+      "id": "blender",
+      "label": "Blender Cycles",
+      "reference": true
+    },
+    {
+      "id": "webgpu-new",
+      "label": "WebGPU New"
+    }
   ],
   "outputs": [
-    { "id": "beauty", "label": "Beauty" },
-    { "id": "direct", "label": "Direct" },
-    { "id": "ao", "label": "Ambient occlusion" }
+    {
+      "id": "beauty",
+      "label": "Beauty"
+    }
   ]
 }

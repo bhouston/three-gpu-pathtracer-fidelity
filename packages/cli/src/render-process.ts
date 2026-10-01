@@ -3,7 +3,7 @@
 import { mkdir } from 'node:fs/promises';
 import path from 'node:path';
 import sharp from 'sharp';
-import type { PassName, RendererName } from '@pathtracer-fidelity/renderers';
+import type { RendererName } from '@pathtracer-fidelity/renderers';
 
 /** A renderer job can also target Blender Cycles, a second ground-truth renderer that isn't a `LiveRenderer`
  * (it renders in one batch call via `renderBlender`, not `createRenderer`'s incremental frame loop). */
@@ -12,7 +12,6 @@ export type JobRendererName = RendererName | 'blender';
 export interface RenderJob {
   renderer: JobRendererName;
   scenes: string[];
-  passes: PassName[];
   outDir: string;
   /** Samples per pixel. */
   samples: number;
@@ -46,20 +45,16 @@ async function main(job: RenderJob): Promise<void> {
   const { RESULT_AVIF } = await import('./compare.js');
   const ctx = createNodeSceneContext();
 
-  for (const name of job.scenes) {
-    for (const pass of job.passes) {
-      await render(name, pass);
-    }
-  }
+  for (const name of job.scenes) await render(name);
 
-  async function render(name: string, pass: PassName): Promise<void> {
+  async function render(name: string): Promise<void> {
     const { width, height, create } = getScene(name);
     const start = performance.now();
     seedRandom(); // before the scene and renderer draw any random numbers
     const setup = await create(ctx);
     const canvas = headless.createCanvas(width, height);
-    if (job.renderer === 'blender') return renderBlenderJob(name, pass, setup, canvas, width, height, start);
-    const renderer = await createRenderer(job.renderer, canvas, setup, { width, height, pass });
+    if (job.renderer === 'blender') return renderBlenderJob(name, setup, canvas, width, height, start);
+    const renderer = await createRenderer(job.renderer, canvas, setup, { width, height });
     const target = job.samples;
     const renderStart = performance.now();
     while (renderer.frames < target) {
@@ -69,7 +64,7 @@ async function main(job: RenderJob): Promise<void> {
     }
     const pixels = await headless.readPixels(canvas);
     const renderMs = performance.now() - renderStart;
-    const file = renderPath(name, pass, job.renderer, job.outDir);
+    const file = renderPath(name, job.renderer, job.outDir);
     await mkdir(path.dirname(file), { recursive: true });
     await sharp(pixels, { raw: { width, height, channels: 4 } })
       .removeAlpha()
@@ -77,7 +72,7 @@ async function main(job: RenderJob): Promise<void> {
       .toFile(file);
     renderer.dispose();
     console.log(
-      `${name} | ${pass} | ${job.renderer}: ${target} samples in ${seconds(renderMs)} (setup ${seconds(renderStart - start)}) -> ${path.relative(process.cwd(), file)}`,
+      `${name} | ${job.renderer}: ${target} samples in ${seconds(renderMs)} (setup ${seconds(renderStart - start)}) -> ${path.relative(process.cwd(), file)}`,
     );
   }
 
@@ -85,7 +80,6 @@ async function main(job: RenderJob): Promise<void> {
   // oxlint-disable-next-line typescript/no-explicit-any -- headless SceneSetup import is dynamic (see main())
   async function renderBlenderJob(
     name: string,
-    pass: PassName,
     setup: any,
     canvas: HTMLCanvasElement,
     width: number,
@@ -94,16 +88,16 @@ async function main(job: RenderJob): Promise<void> {
   ): Promise<void> {
     const { renderBlender } = await import('./blender.js');
     const renderStart = performance.now();
-    const pixels = await renderBlender(setup, { width, height, pass, samples: job.samples, canvas });
+    const pixels = await renderBlender(setup, { width, height, samples: job.samples, canvas });
     const renderMs = performance.now() - renderStart;
-    const file = renderPath(name, pass, 'blender', job.outDir);
+    const file = renderPath(name, 'blender', job.outDir);
     await mkdir(path.dirname(file), { recursive: true });
     await sharp(pixels, { raw: { width, height, channels: 4 } })
       .removeAlpha()
       .avif(RESULT_AVIF)
       .toFile(file);
     console.log(
-      `${name} | ${pass} | blender: ${job.samples} samples in ${seconds(renderMs)} (setup ${seconds(renderStart - start)}) -> ${path.relative(process.cwd(), file)}`,
+      `${name} | blender: ${job.samples} samples in ${seconds(renderMs)} (setup ${seconds(renderStart - start)}) -> ${path.relative(process.cwd(), file)}`,
     );
   }
 }
