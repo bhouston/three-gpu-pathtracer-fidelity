@@ -1,3 +1,4 @@
+import os from 'node:os';
 import { fileURLToPath } from 'node:url';
 import type { OpenCliDocument } from '@clidoc/core';
 import { createDocgenCommand, fromYargsAsync } from '@clidoc/yargs';
@@ -23,6 +24,12 @@ export async function cliDocument(): Promise<OpenCliDocument> {
 }
 
 export async function runCli(argv = hideBin(process.argv)): Promise<void> {
+  // Child renderers inherit this, so long runs don't starve the machine.
+  try {
+    os.setPriority(os.constants.priority.PRIORITY_BELOW_NORMAL);
+  } catch {
+    // Unsupported platform or insufficient rights: run at normal priority.
+  }
   const commands = await loadCommands();
   const docgen = createDocgenCommand(() =>
     fromYargsAsync([...commands, docgen], { title: 'three-gpu-pathtracer-fidelity', binary: 'cli', version: '0.1.0' }),
