@@ -439,8 +439,9 @@ const entries: ModelEntry[] = [
     post: mecaBricksGoldCorrection,
     rotation: [0, -PI * 0.6, 0],
   },
-  ldraw('b-wing-starfighter', '10227-1 - B-wing Starfighter.mpd'),
-  ldraw('bennys-spaceship', '70816 - Bennys Spaceship Spa_kOdSy6E.mpd'),
+  // b-wing-starfighter (10227) and bennys-spaceship (70816) dropped: same LDrawLoader embedded-subfile bug as the
+  // UCS Millennium Falcon above (a locally-overridden "s/<prefix> - <part>s01.dat" resolves to the wrong on-disk
+  // path instead of the model's own embedded copy).
   ldraw('blizzard-baron', '6879-1 - Blizzard Baron.mpd'),
   ldraw('ice-station-odyssey', '6983-1 - Ice Station Odyssey.mpd'),
   ldraw('ice-tunnelator', '6814-1 - Ice Tunnelator.mpd'),
@@ -459,7 +460,9 @@ const entries: ModelEntry[] = [
   ldraw('super-model-building-instruction', '6861-2 - Super Model Building Instruction.mpd'),
   { name: 'lego-ucs-at-st', file: `${THREE_LDRAW}/10174-1-ImperialAT-ST-UCS.mpd_Packed.mpd`, post: ldrawGlass },
   ldraw('ucs-imperial-star-destroyer', '10030-1 - Imperial Star Destroyer - UCS.mpd'),
-  ldraw('ucs-millennium-falcon', '10179-1 - Millennium Falcon - UCS.mpd'),
+  // ucs-millennium-falcon (10179-1) dropped: ~7500 pieces, several locally-embedded subfiles that LDrawLoader
+  // (submodules/three.js) resolves to the wrong on-disk path instead of the model's own override - fixing that
+  // is an upstream submodule change, out of scope here.
   ldraw('ucs-tie-interceptor', '7181 - TIE Interceptor - UCS.mpd'),
   ldraw('ucs-x-wing-fighter', '7191 - X-wing Fighter - UCS.mpd'),
 ];

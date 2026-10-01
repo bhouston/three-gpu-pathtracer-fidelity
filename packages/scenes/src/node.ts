@@ -7,7 +7,7 @@ import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { DOMParser } from '@xmldom/xmldom';
 import sharp from 'sharp';
-import { DataTexture, LoadingManager, MeshStandardMaterial } from 'three';
+import { DataTexture, LoadingManager, MeshStandardMaterial, TextureLoader } from 'three';
 import type { Mesh } from 'three';
 import type { Texture } from 'three';
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
@@ -176,6 +176,27 @@ export function createNodeSceneContext(examplesDir = threeExamplesDir): SceneCon
     async loadCollada(assetPath) {
       const file = resolveAsset(assetPath);
       (globalThis as { DOMParser?: unknown }).DOMParser ??= DOMParser; // ColladaLoader parses XML
+      // ColladaComposer builds its own `new TextureLoader(manager)` (no plugin hook like GLTFLoader's); its default
+      // `load` goes through ImageLoader, which needs a DOM `Image`/`document`. Patch it once to reuse the same
+      // sharp-based decode as `imageLoader` above.
+      (TextureLoader.prototype as { load: unknown }).load = function (
+        this: TextureLoader,
+        url: string,
+        onLoad?: (texture: Texture) => void,
+        _onProgress?: unknown,
+        onError?: (error: unknown) => void,
+      ): Texture {
+        const texture = new DataTexture();
+        readUrl(this.manager.resolveURL(this.path ? this.path + url : url))
+          .then((buffer) => sharp(buffer).ensureAlpha().raw().toBuffer({ resolveWithObject: true }))
+          .then(({ data, info }) => {
+            texture.image = { data: new Uint8Array(data), width: info.width, height: info.height };
+            texture.needsUpdate = true;
+            onLoad?.(texture as unknown as Texture);
+          })
+          .catch((error: unknown) => onError?.(error));
+        return texture as unknown as Texture;
+      };
       const { scene } = new ColladaLoader().parse(
         await readFile(file, 'utf8'),
         `${pathToFileURL(path.dirname(file)).href}/`,
