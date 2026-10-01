@@ -1,0 +1,11 @@
+{
+  "extends": "../../tsconfig.node.json",
+  "compilerOptions": {
+    "composite": true,
+    "lib": ["ES2024", "DOM"],
+    // three-gpu-pathtracer is imported from its JS source (submodule); allowJs lets it resolve without .d.ts files
+    "allowJs": true,
+    "checkJs": false
+  },
+  "references": [{ "path": "../../packages/scenes" }]
+}

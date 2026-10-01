@@ -1,0 +1,11 @@
+[submodule "submodules/three.js"]
+	path = submodules/three.js
+	url = https://github.com/bhouston/three.js.git
+	branch = ssgi-traa-redesign
+	ignore = dirty
+[submodule "submodules/three-gpu-pathtracer"]
+	path = submodules/three-gpu-pathtracer
+	url = https://github.com/bhouston/three-gpu-pathtracer.git
+	branch = ss-fidelity
+	ignore = dirty
+	shallow = true

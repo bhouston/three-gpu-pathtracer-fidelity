@@ -1,0 +1,47 @@
+{
+  "name": "three-gpu-pathtracer-fidelity",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Fidelity suite validating the new WebGPU three-gpu-pathtracer against Blender Cycles and the legacy WebGL three-gpu-pathtracer.",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "prepare": "husky",
+    "build": "tsc -b && pnpm --filter ./submodules/three.js build && pnpm -r --if-present --filter './packages/*' build",
+    "dev": "pnpm -r --parallel --stream dev",
+    "tsc": "tsc -b",
+    "format": "oxfmt .",
+    "format:check": "oxfmt --check .",
+    "lint": "oxlint .",
+    "lint:fix": "oxlint --fix .",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "cli": "pnpm --filter @pathtracer-fidelity/cli start",
+    "fidelity:dev": "fidelity-kit dev results",
+    "fidelity:build": "fidelity-kit build results --out site/"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^21.2.2",
+    "@commitlint/config-conventional": "^21.2.2",
+    "@types/node": "^25.6.0",
+    "@vitest/coverage-v8": "^4.1.10",
+    "fidelity-kit": "^2.0.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^17.3.0",
+    "oxfmt": "^0.58.0",
+    "oxlint": "^1.73.0",
+    "typescript": "^7",
+    "vitest": "^4.1.10"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx,mjs,cjs}": [
+      "oxfmt --no-error-on-unmatched-pattern",
+      "oxlint --fix --no-error-on-unmatched-pattern"
+    ],
+    "*.{json,jsonc,md,css,html,yml,yaml}": "oxfmt --no-error-on-unmatched-pattern"
+  },
+  "engines": {
+    "node": ">=24.0.0"
+  },
+  "packageManager": "pnpm@11.0.8"
+}

@@ -1,0 +1,19 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "composite": true
+  },
+  "files": [],
+  "include": [],
+  "references": [
+    {
+      "path": "./packages/scenes"
+    },
+    {
+      "path": "./packages/renderers"
+    },
+    {
+      "path": "./packages/cli"
+    }
+  ]
+}

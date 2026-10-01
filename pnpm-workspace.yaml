@@ -1,0 +1,18 @@
+packages:
+  - packages/*
+  - submodules/three.js
+  - submodules/three-gpu-pathtracer
+
+allowBuilds:
+  esbuild: true
+  sharp: true
+  webgpu: true
+  '@onirenaud/node-webgl': true
+  puppeteer: false
+
+link-workspace-packages: false
+
+# one copy of three everywhere (three-mesh-bvh, three-gpu-pathtracer, scenes, renderers): the fork in the submodule
+overrides:
+  three: 'workspace:*'
+  '@types/three': '^0.186.0'
