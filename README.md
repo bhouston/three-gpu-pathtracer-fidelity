@@ -72,7 +72,7 @@ and `createRenderer` in `src/index.ts` dispatches by name.
 
 Each render runs in its **own child process** (`render-process.ts`), because dawn and ANGLE don't share a process
 reliably. Headless GPU comes from `src/headless/webgpu.ts` (dawn) and `src/headless/webgl.ts` (ANGLE). `Math.random`
-is seeded, so renders are reproducible. Blender runs through `src/blender.ts` and `blender/render.py`.
+is seeded, so renders are reproducible. Blender runs through `src/blender.ts` and `blender/render.py`. The scene goes over as glTF, and the job file carries what glTF can't express: rect and circular area lights, a background equirect separate from the environment (seen by camera and pure-transmission rays, as in the pathtracer), and `PhysicalCamera` depth of field.
 
 | Command                               | Does                                                                                                            |
 | ------------------------------------- | --------------------------------------------------------------------------------------------------------------- |

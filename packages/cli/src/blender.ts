@@ -15,6 +15,8 @@ import {
   DirectionalLight,
   FloatType,
   NoToneMapping,
+  Quaternion,
+  RectAreaLight,
   SpotLight,
   Vector3,
   WebGLRenderer,
@@ -74,6 +76,41 @@ class ExportCanvas {
       .toBuffer()
       .then((buffer) => callback(new Blob([new Uint8Array(buffer)], { type: mimeType })));
   }
+}
+
+/** A rect or circular area light in three.js world space (Y up): one-sided along local -Z, radiance color * intensity. */
+export interface AreaLightJob {
+  position: [number, number, number];
+  /** x, y, z, w */
+  quaternion: [number, number, number, number];
+  width: number;
+  height: number;
+  circular: boolean;
+  color: [number, number, number];
+  intensity: number;
+}
+
+/** Removes the scene's area lights (glTF can't express them) and returns them as the pathtracer sees them. */
+export function extractAreaLights(scene: Object3D): AreaLightJob[] {
+  scene.updateMatrixWorld();
+  const lights: RectAreaLight[] = [];
+  scene.traverse((object) => object instanceof RectAreaLight && lights.push(object));
+  return lights.map((light) => {
+    // like the pathtracer: world position and rotation, but width and height unscaled
+    const position = light.getWorldPosition(new Vector3());
+    const quaternion = light.getWorldQuaternion(new Quaternion());
+    light.removeFromParent();
+    const { r, g, b } = light.color;
+    return {
+      position: position.toArray(),
+      quaternion: quaternion.toArray() as AreaLightJob['quaternion'],
+      width: light.width,
+      height: light.height,
+      circular: Boolean((light as { isCircular?: boolean }).isCircular),
+      color: [r, g, b],
+      intensity: light.intensity,
+    };
+  });
 }
 
 /** Binary glTF of the scene plus its camera; lights get their target as a child, the direction glTF can express. */
@@ -208,8 +245,11 @@ export function encodeLinear(
   return out;
 }
 
-/** The pathtracer's background: gradient, color (a flat gradient), none (black), or the environment texture itself. */
-function sceneBackground(setup: SceneSetup): Background {
+/**
+ * The pathtracer's background: gradient, color (a flat gradient), none (black), the environment texture itself, or
+ * another equirect (seen by camera and pure transmission rays, while every other ray sees the environment).
+ */
+function sceneBackground(setup: SceneSetup): Background | DataTexture {
   const { scene, gradientBackground } = setup;
   if (gradientBackground) return gradientBackground;
   const bg = scene.background;
@@ -217,10 +257,9 @@ function sceneBackground(setup: SceneSetup): Background {
     const color = bg ?? new Color(0x000000);
     return { center: color, edge: color };
   }
-  if (bg !== scene.environment || scene.backgroundIntensity !== scene.environmentIntensity) {
-    throw new Error('blender: only a background equal to the environment (same intensity) is supported');
-  }
-  return 'environment';
+  if (bg === scene.environment && scene.backgroundIntensity === scene.environmentIntensity) return 'environment';
+  if (bg instanceof DataTexture) return bg;
+  throw new Error('blender: only an equirect DataTexture background is supported');
 }
 
 export interface BlenderRenderOptions {
@@ -247,7 +286,11 @@ export async function renderBlender(setup: SceneSetup, options: BlenderRenderOpt
       environmentEquirect(renderer, setup) ?? (scene.environment instanceof DataTexture ? scene.environment : null);
     if (environment) await writeFile(path.join(dir, 'environment.exr'), await exportEquirect(environment));
     renderer.dispose();
+    if (bg instanceof DataTexture) await writeFile(path.join(dir, 'background.exr'), await exportEquirect(bg));
+    const areaLights = extractAreaLights(scene);
     await writeFile(path.join(dir, 'scene.glb'), new Uint8Array(await exportGlb(setup)));
+    // PhysicalCamera depth of field: aperture diameter bokehSize mm, focus distance in world units
+    const { bokehSize = 0, focusDistance = 0 } = camera as { bokehSize?: number; focusDistance?: number };
 
     const job = {
       glb: path.join(dir, 'scene.glb'),
@@ -255,7 +298,13 @@ export async function renderBlender(setup: SceneSetup, options: BlenderRenderOpt
       environment: environment
         ? { path: path.join(dir, 'environment.exr'), intensity: scene.environmentIntensity }
         : undefined,
-      transparent: bg !== 'environment',
+      background:
+        bg instanceof DataTexture
+          ? { path: path.join(dir, 'background.exr'), intensity: scene.backgroundIntensity }
+          : undefined,
+      areaLights,
+      dof: bokehSize > 0 ? { bokehSize, focusDistance } : undefined,
+      transparent: bg !== 'environment' && !(bg instanceof DataTexture),
       samples,
       bounces: PATHTRACER_BOUNCES,
       width,
@@ -272,7 +321,15 @@ export async function renderBlender(setup: SceneSetup, options: BlenderRenderOpt
     ]);
 
     const exr = new EXRLoader().setDataType(FloatType).parse(new Uint8Array(await readFile(job.output)).buffer);
-    return encodeLinear(exr.data as Float32Array, width, height, bg, setup.toneMapping, setup.toneMappingExposure);
+    const composite = bg instanceof DataTexture ? 'environment' : bg; // Cycles rendered the background itself
+    return encodeLinear(
+      exr.data as Float32Array,
+      width,
+      height,
+      composite,
+      setup.toneMapping,
+      setup.toneMappingExposure,
+    );
   } finally {
     await rm(dir, { recursive: true, force: true });
   }

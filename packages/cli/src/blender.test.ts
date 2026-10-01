@@ -1,6 +1,32 @@
-import { ACESFilmicToneMapping, Color, LinearToneMapping, NoToneMapping } from 'three';
+import { ACESFilmicToneMapping, Color, Group, LinearToneMapping, NoToneMapping, RectAreaLight, Scene } from 'three';
 import { describe, expect, it } from 'vitest';
-import { encodeLinear } from './blender.js';
+import { encodeLinear, extractAreaLights } from './blender.js';
+
+describe('extractAreaLights', () => {
+  it('removes area lights and keeps world pose, unscaled size and radiance', () => {
+    const scene = new Scene();
+    const group = new Group();
+    group.scale.setScalar(0.5); // like the model list's normalization: size is in world units already
+    group.position.set(1, 0, 0);
+    group.rotation.y = Math.PI / 2;
+    const light = new RectAreaLight(0xffffff, 3, 2, 4);
+    light.position.set(0, 2, 0);
+    (light as unknown as { isCircular: boolean }).isCircular = true;
+    group.add(light);
+    scene.add(group);
+
+    const [area] = extractAreaLights(scene);
+    expect(light.parent).toBeNull();
+    expect(area!.position.map((v) => +v.toFixed(6))).toEqual([1, 1, 0]);
+    expect(area!.quaternion.map((v) => +v.toFixed(6))).toEqual([
+      0,
+      +Math.SQRT1_2.toFixed(6),
+      0,
+      +Math.SQRT1_2.toFixed(6),
+    ]);
+    expect(area).toMatchObject({ width: 2, height: 4, circular: true, color: [1, 1, 1], intensity: 3 });
+  });
+});
 
 describe('encodeLinear', () => {
   it('flips EXR rows to top-first and encodes sRGB', () => {
