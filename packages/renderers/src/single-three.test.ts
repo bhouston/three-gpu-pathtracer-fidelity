@@ -13,6 +13,11 @@ it('resolves one copy of three everywhere', () => {
   const fromPathtracer = createRequire(pathtracerEntry);
   const importers = {
     renderers: import.meta.url,
+    'fidelity-kit-blender': path.join(repoRoot, 'submodules/fidelity-kit-blender/package.json'),
+    'fidelity-kit-three-gpu-pathtracer': path.join(
+      repoRoot,
+      'submodules/fidelity-kit-three-gpu-pathtracer/package.json',
+    ),
     scenes: path.join(repoRoot, 'packages/scenes/package.json'),
     cli: path.join(repoRoot, 'packages/cli/package.json'),
     'three-gpu-pathtracer': pathtracerEntry,

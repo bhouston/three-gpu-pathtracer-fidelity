@@ -7,8 +7,8 @@ import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { DOMParser } from '@xmldom/xmldom';
 import sharp from 'sharp';
-import { DataTexture, LoadingManager, MeshStandardMaterial } from 'three';
-import type { Mesh } from 'three';
+import { DataTexture, LoadingManager, MeshStandardMaterial, TextureLoader } from 'three';
+import type { Mesh, Object3D } from 'three';
 import type { Texture } from 'three';
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
@@ -160,9 +160,18 @@ export function createNodeSceneContext(examplesDir = threeExamplesDir): SceneCon
       const ldraw = new LDrawLoader(ldrawManager);
       ldraw.setConditionalLineMaterial(LDrawConditionalLineMaterial as never);
       await ldraw.preloadMaterials(`${library}colors/ldcfgalt.ldr`);
-      const result = await ldraw
-        .setPartsLibraryPath(`${library}complete/ldraw/`)
-        .loadAsync(pathToFileURL(resolveAsset(assetPath)).href);
+      // LDrawLoader normalizes reference paths but not embedded FILE names. Normalize both to the same keys.
+      const text = (await readFile(resolveAsset(assetPath), 'utf8')).replace(
+        /^0 FILE (.+)$/gm,
+        (_line, name: string) => {
+          let normalized = name.trim().replace(/\\/g, '/');
+          if (normalized.startsWith('s/')) normalized = `parts/${normalized}`;
+          else if (normalized.startsWith('48/')) normalized = `p/${normalized}`;
+          return `0 FILE ${normalized}`;
+        },
+      );
+      ldraw.setPartsLibraryPath(`${library}complete/ldraw/`);
+      const result = await new Promise<Object3D>((resolve, reject) => ldraw.parse(text, resolve, reject));
       const model = LDrawUtils.mergeObject(result);
       model.rotation.set(Math.PI, 0, 0);
       const lines: Mesh[] = [];
@@ -176,10 +185,36 @@ export function createNodeSceneContext(examplesDir = threeExamplesDir): SceneCon
     async loadCollada(assetPath) {
       const file = resolveAsset(assetPath);
       (globalThis as { DOMParser?: unknown }).DOMParser ??= DOMParser; // ColladaLoader parses XML
-      const { scene } = new ColladaLoader().parse(
-        await readFile(file, 'utf8'),
-        `${pathToFileURL(path.dirname(file)).href}/`,
-      )!;
+      const text = await readFile(file, 'utf8');
+      const textures: Promise<void>[] = [];
+      const originalLoad = TextureLoader.prototype.load;
+      let scene;
+      // ColladaLoader constructs its own TextureLoader. Substitute only during its synchronous parse,
+      // then await all Node image decodes before returning the scene to an exporter or GPU renderer.
+      TextureLoader.prototype.load = function (url, onLoad, _onProgress, onError) {
+        const texture = new DataTexture();
+        texture.flipY = true; // TextureLoader convention (DataTexture defaults to false)
+        const textureUrl = this.path + url;
+        const decode = readUrl(textureUrl)
+          .then((buffer) => sharp(buffer).ensureAlpha().raw().toBuffer({ resolveWithObject: true }))
+          .then(({ data, info }) => {
+            texture.image = { data: new Uint8Array(data), width: info.width, height: info.height };
+            texture.needsUpdate = true;
+            onLoad?.(texture as unknown as ReturnType<TextureLoader['load']>);
+          })
+          .catch((error: unknown) => {
+            onError?.(error);
+            throw error;
+          });
+        textures.push(decode);
+        return texture as unknown as ReturnType<TextureLoader['load']>;
+      };
+      try {
+        scene = new ColladaLoader().parse(text, `${pathToFileURL(path.dirname(file)).href}/`)!.scene;
+      } finally {
+        TextureLoader.prototype.load = originalLoad;
+      }
+      await Promise.all(textures);
       scene.scale.setScalar(1);
       scene.traverse((c) => {
         const material = (c as Mesh).material as MeshStandardMaterial & { isMeshPhongMaterial?: boolean };

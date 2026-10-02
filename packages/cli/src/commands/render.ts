@@ -36,6 +36,11 @@ export const command = defineCommand({
         default: 4096,
         describe: 'Samples per pixel',
       })
+      .option('blender-device', {
+        choices: ['auto', 'cpu', 'gpu'] as const,
+        default: 'auto' as const,
+        describe: 'Cycles device (CPU can avoid GPU memory contention)',
+      })
       .option('output', { type: 'string', default: resultsDir, describe: 'Results directory' })
       .option('missing-only', {
         type: 'boolean',
@@ -52,7 +57,13 @@ export const command = defineCommand({
     for (const renderer of renderers) {
       for (const scene of scenes) {
         if (argv.missingOnly && existsSync(renderPath(scene, renderer, argv.output))) continue;
-        const code = await run({ renderer, scenes: [scene], outDir: argv.output, samples: argv.samples });
+        const code = await run({
+          renderer,
+          scenes: [scene],
+          outDir: argv.output,
+          samples: argv.samples,
+          blenderDevice: argv.blenderDevice,
+        });
         if (code !== 0) {
           console.error(`${scene} | ${renderer} failed (exit code ${code})`);
           failed = true;

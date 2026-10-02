@@ -22,6 +22,7 @@
     "@onirenaud/node-webgl": "^0.2.0",
     "@pathtracer-fidelity/renderers": "workspace:*",
     "@pathtracer-fidelity/scenes": "workspace:*",
+    "fidelity-kit-blender": "workspace:*",
     "sharp": "^0.35.4",
     "three": "^0.186.0",
     "webgpu": "^0.6.1",

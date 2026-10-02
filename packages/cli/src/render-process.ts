@@ -15,6 +15,7 @@ export interface RenderJob {
   outDir: string;
   /** Samples per pixel. */
   samples: number;
+  blenderDevice?: 'auto' | 'cpu' | 'gpu';
 }
 
 const seconds = (ms: number) => `${(ms / 1000).toFixed(1)}s`;
@@ -88,7 +89,13 @@ async function main(job: RenderJob): Promise<void> {
   ): Promise<void> {
     const { renderBlender } = await import('./blender.js');
     const renderStart = performance.now();
-    const pixels = await renderBlender(setup, { width, height, samples: job.samples, canvas });
+    const pixels = await renderBlender(setup, {
+      width,
+      height,
+      samples: job.samples,
+      canvas,
+      device: job.blenderDevice,
+    });
     const renderMs = performance.now() - renderStart;
     const file = renderPath(name, 'blender', job.outDir);
     await mkdir(path.dirname(file), { recursive: true });
