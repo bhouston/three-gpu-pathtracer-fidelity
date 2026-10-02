@@ -5,11 +5,13 @@ three-gpu-pathtracer-fidelity validates the new WebGPU-based
 and the established **WebGL** path tracer. Each scene is rendered by all three, the images are diffed and scored, and
 the results can be browsed in a web viewer: <https://three-gpu-pathtracer-fidelity.ben3d.ca>.
 
-| Renderer (id)  | Name           | Role       | What it is                                                    |
-| -------------- | -------------- | ---------- | ------------------------------------------------------------- |
-| `blender`      | Blender Cycles | reference  | Independent production path tracer (default 4096 spp).        |
-| `webgl-legacy` | WebGL Legacy   | reference  | The established `WebGLPathTracer` (default 4096 spp, seeded). |
-| `webgpu-new`   | WebGPU New     | under test | The new `WebGPUPathTracer` (default 4096 spp, seeded).        |
+| Renderer (id)  | Name           | Role       | What it is                                  |
+| -------------- | -------------- | ---------- | ------------------------------------------- |
+| `blender`      | Blender Cycles | reference  | Independent production path tracer.         |
+| `webgl-legacy` | WebGL Legacy   | reference  | The established `WebGLPathTracer` (seeded). |
+| `webgpu-new`   | WebGPU New     | under test | The new `WebGPUPathTracer` (seeded).        |
+
+Every renderer samples until its image is converged, up to 4096 spp; see [Sampling](#sampling).
 
 The suite follows the design of the sibling [material-fidelity](https://github.com/bhouston/mtlx-fidelity) project: a
 scene registry, a renderer package, a CLI that renders, and [fidelity-kit](https://github.com/bhouston/fidelity-kit)
@@ -79,13 +81,37 @@ The legacy WebGL renderer uses the pinned `fidelity-kit-three-gpu-pathtracer` in
 Both adapters build before the suite and use the shared Three.js install and pathtracer fork;
 the adapter's nested development submodule is not part of this workspace.
 
-| Command                               | Does                                                                                                            |
-| ------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
-| `cli list [--verbose]`                | List scene names.                                                                                               |
-| `cli render`                          | Write `results/<scene>/beauty/<renderer>.avif`. `--scenes/--renderers` take comma-separated globs; `--samples`. |
-| `cli quality-gate <base> <candidate>` | Fail if the candidate's mean RMSE vs `webgl-legacy` regresses by more than `--threshold`.                       |
+| Command                               | Does                                                                                               |
+| ------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| `cli list [--verbose]`                | List scene names.                                                                                  |
+| `cli render`                          | Write `results/<scene>/beauty/<renderer>.avif`. `--scenes/--renderers` take comma-separated globs. |
+| `cli quality-gate <base> <candidate>` | Fail if the candidate's mean RMSE vs `webgl-legacy` regresses by more than `--threshold`.          |
 
 Run `pnpm cli <command> --help` for all flags. `pnpm cli` runs the built `dist/`, so run `pnpm build` after changing sources.
+
+#### Sampling
+
+Renders stop at a noise target rather than a fixed sample count, with `--samples` (default 4096) as the cap:
+
+- **Path tracers** have no per-pixel adaptive sampling, so `render-process.ts` checks convergence itself
+  (`src/convergence.ts`). At checkpoints four per doubling of the sample count, it reads the image back and compares
+  it with the snapshot at half the samples: for a Monte Carlo estimate, that difference's RMS equals the remaining noise.
+  The noise is measured per 16 px tile, and the render stops once the 99th-percentile tile is at or below
+  `--noise-threshold` (default 0.5 % of the sRGB range), but never before `--min-samples` (default 128). Small noisy
+  regions such as caustics therefore keep sampling even when the rest of the image is clean.
+- **Blender Cycles** uses its own per-pixel adaptive sampling with `--cycles-noise-threshold` (default 0.005).
+
+Pass `--noise-threshold 0 --cycles-noise-threshold 0` for exact, fixed sample counts. Each render logs the samples it
+stopped at and its final noise estimate. Calibration against 4096 spp renders is recorded in
+[adaptive sampling](docs/adaptive-sampling.md).
+
+#### Work queues
+
+Jobs run on two concurrent lanes, each one job at a time: a **GPU lane** (WebGL, WebGPU, and Blender on the GPU) and
+a **CPU lane** (Blender on the CPU). With `--blender-device auto` (the default), a Blender job runs on whichever lane is
+free first, on that lane's device: Cycles uses the GPU on the GPU lane (failing if there is none, rather than falling
+back to the CPU and competing with the CPU lane) and the CPU on the CPU lane. The GPU lane takes the path-tracer jobs first and Blender jobs after them. CPU-lane renders run at low
+priority, so they never starve the GPU lane's driver threads. `--blender-device cpu` or `gpu` pins Blender to one lane.
 
 ### Viewer
 
@@ -124,8 +150,8 @@ have deep paths. Headless WebGL runs on ANGLE's Direct3D backend, and its HLSL `
 ## Rendering integration migration
 
 Blender and legacy WebGL now use the fidelity-kit integrations. Output remains explicit sRGB with each scene's
-tone mapping and exposure, eight bounces and no denoising. Blender uses seed 1 and disables adaptive sampling
-to honor the requested sample count. Procedural environments are baked with the shared adapter utility.
+tone mapping and exposure, eight bounces and no denoising. Blender uses seed 1 and Cycles adaptive sampling
+(see [Sampling](#sampling)). Procedural environments are baked with the shared adapter utility.
 
 The suite always enables the Blender adapter's optional area-light, physical-camera depth-of-field and independent
 equirectangular background translations. These features are optional upstream; adapter adoption itself is the
@@ -135,8 +161,8 @@ pathtracer. Other unsupported features fail, including custom shaders, nonphysic
 backgrounds and anamorphic depth of field. Animated skin/morph pose matching and advanced glTF extensions still
 need visual validation.
 
-Cycles defaults to automatic device selection. Use `pnpm cli render --renderers blender --blender-device cpu` when
-GPU memory is occupied by other renders, or select `gpu` explicitly.
+Cycles defaults to `auto`, which lets either work queue render it. Use `--blender-device cpu` when GPU memory is
+occupied by other renders, or select `gpu` explicitly.
 
 Actual smoke-render results and known blockers are recorded in
 [rendering integration validation](docs/rendering-integration-validation.md).

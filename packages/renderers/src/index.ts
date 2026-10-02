@@ -4,7 +4,7 @@ import { createWebGPUPathTracerRenderer } from './pathtracer-webgpu.js';
 import type { LiveRenderer, RendererName, RendererOptions } from './types.js';
 
 export * from './types.js';
-export { createPathTracerRenderer, environmentEquirect, PATHTRACER_BOUNCES } from './pathtracer.js';
+export { assertNotAllBlack, createPathTracerRenderer, environmentEquirect, PATHTRACER_BOUNCES } from './pathtracer.js';
 export { createWebGPUPathTracerRenderer } from './pathtracer-webgpu.js';
 
 export function createRenderer(

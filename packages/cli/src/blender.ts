@@ -9,7 +9,10 @@ import type { SceneSetup } from '@pathtracer-fidelity/scenes';
 export interface BlenderRenderOptions {
   width: number;
   height: number;
+  /** Maximum samples per pixel; the exact count when `noiseThreshold` is 0. */
   samples: number;
+  /** Cycles adaptive sampling: a pixel stops sampling once its noise is below this. 0 disables it. */
+  noiseThreshold?: number;
   device?: 'auto' | 'cpu' | 'gpu';
   /** Headless WebGL canvas, used only when procedural lighting needs baking. */
   canvas: HTMLCanvasElement;
@@ -50,7 +53,7 @@ export async function renderBlender(setup: SceneSetup, options: BlenderRenderOpt
       bounces: PATHTRACER_BOUNCES,
       seed: 1,
       denoise: false,
-      adaptiveThreshold: 0,
+      adaptiveThreshold: options.noiseThreshold ?? 0,
       ...outputSettings({
         toneMapping: setup.toneMapping,
         toneMappingExposure: setup.toneMappingExposure,

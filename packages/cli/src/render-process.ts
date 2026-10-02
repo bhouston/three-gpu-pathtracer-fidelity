@@ -13,12 +13,19 @@ export interface RenderJob {
   renderer: JobRendererName;
   scenes: string[];
   outDir: string;
-  /** Samples per pixel. */
+  /** Maximum samples per pixel; the exact count when the relevant noise threshold is 0. */
   samples: number;
+  /** Path tracers: never stop before this many samples. */
+  minSamples?: number;
+  /** Path tracers: stop once the percentile-tile noise estimate reaches this (sRGB, 0-1); 0 disables. */
+  noiseThreshold?: number;
+  /** Blender Cycles' per-pixel adaptive sampling threshold; 0 disables. */
+  cyclesNoiseThreshold?: number;
   blenderDevice?: 'auto' | 'cpu' | 'gpu';
 }
 
 const seconds = (ms: number) => `${(ms / 1000).toFixed(1)}s`;
+const percent = (value: number) => `${(value * 100).toFixed(2)}%`;
 
 /** Replaces Math.random with a fixed-seed generator (mulberry32): every render is reproducible. */
 function seedRandom(seed = 1): void {
@@ -39,11 +46,12 @@ function usesWebGL(renderer: JobRendererName): boolean {
 async function main(job: RenderJob): Promise<void> {
   const headless = usesWebGL(job.renderer) ? await import('./headless/webgl.js') : await import('./headless/webgpu.js');
   headless.install();
-  const { createRenderer } = await import('@pathtracer-fidelity/renderers');
+  const { assertNotAllBlack, createRenderer } = await import('@pathtracer-fidelity/renderers');
   const { getScene } = await import('@pathtracer-fidelity/scenes');
   const { createNodeSceneContext } = await import('@pathtracer-fidelity/scenes/node');
   const { renderPath } = await import('./paths.js');
   const { RESULT_AVIF } = await import('./compare.js');
+  const { checkpoints, ConvergenceMonitor } = await import('./convergence.js');
   const ctx = createNodeSceneContext();
 
   for (const name of job.scenes) await render(name);
@@ -56,24 +64,36 @@ async function main(job: RenderJob): Promise<void> {
     const canvas = headless.createCanvas(width, height);
     if (job.renderer === 'blender') return renderBlenderJob(name, setup, canvas, width, height, start);
     const renderer = await createRenderer(job.renderer, canvas, setup, { width, height });
-    const target = job.samples;
+    const threshold = job.noiseThreshold ?? 0;
+    const monitor =
+      threshold > 0 ? new ConvergenceMonitor(width, height, { threshold, minSamples: job.minSamples ?? 0 }) : undefined;
     const renderStart = performance.now();
-    while (renderer.frames < target) {
-      headless.animationFrame();
-      renderer.render();
-      await new Promise((resolve) => setImmediate(resolve)); // lets async shader compilation progress
+    // fixed sample count without a threshold; otherwise geometric checkpoints compare the image with an earlier one
+    for (const checkpoint of monitor ? checkpoints(job.samples) : [job.samples]) {
+      while (renderer.frames < checkpoint) {
+        headless.animationFrame();
+        renderer.render();
+        await new Promise((resolve) => setImmediate(resolve)); // lets async shader compilation progress
+      }
+      if (monitor?.add(renderer.frames, await headless.readPixels(canvas))) break;
     }
     const pixels = await headless.readPixels(canvas);
     const renderMs = performance.now() - renderStart;
+    // the adapters' shared rule (Blender applies it itself): a black frame means a lost GPU context, not a result
+    assertNotAllBlack(pixels);
     const file = renderPath(name, job.renderer, job.outDir);
     await mkdir(path.dirname(file), { recursive: true });
     await sharp(pixels, { raw: { width, height, channels: 4 } })
       .removeAlpha()
       .avif(RESULT_AVIF)
       .toFile(file);
+    const samples = renderer.frames;
     renderer.dispose();
+    const noise = monitor?.last
+      ? `, noise ${percent(monitor.last.tile)} p99 tile / ${percent(monitor.last.rms)} rms`
+      : '';
     console.log(
-      `${name} | ${job.renderer}: ${target} samples in ${seconds(renderMs)} (setup ${seconds(renderStart - start)}) -> ${path.relative(process.cwd(), file)}`,
+      `${name} | ${job.renderer}: ${samples} samples${noise} in ${seconds(renderMs)} (setup ${seconds(renderStart - start)}) -> ${path.relative(process.cwd(), file)}`,
     );
   }
 
@@ -89,10 +109,12 @@ async function main(job: RenderJob): Promise<void> {
   ): Promise<void> {
     const { renderBlender } = await import('./blender.js');
     const renderStart = performance.now();
+    const noiseThreshold = job.cyclesNoiseThreshold ?? 0;
     const pixels = await renderBlender(setup, {
       width,
       height,
       samples: job.samples,
+      noiseThreshold,
       canvas,
       device: job.blenderDevice,
     });
@@ -103,8 +125,12 @@ async function main(job: RenderJob): Promise<void> {
       .removeAlpha()
       .avif(RESULT_AVIF)
       .toFile(file);
+    const sampling =
+      noiseThreshold > 0
+        ? `up to ${job.samples} samples (noise threshold ${noiseThreshold})`
+        : `${job.samples} samples`;
     console.log(
-      `${name} | blender: ${job.samples} samples in ${seconds(renderMs)} (setup ${seconds(renderStart - start)}) -> ${path.relative(process.cwd(), file)}`,
+      `${name} | blender (${job.blenderDevice ?? 'auto'}): ${sampling} in ${seconds(renderMs)} (setup ${seconds(renderStart - start)}) -> ${path.relative(process.cwd(), file)}`,
     );
   }
 }
