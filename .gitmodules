@@ -19,3 +19,9 @@
 	url = https://github.com/gkjohnson/ldraw-parts-library.git
 	ignore = dirty
 	shallow = true
+[submodule "submodules/fidelity-kit-blender"]
+	path = submodules/fidelity-kit-blender
+	url = https://github.com/bhouston/fidelity-kit-blender.git
+[submodule "submodules/fidelity-kit-three-gpu-pathtracer"]
+	path = submodules/fidelity-kit-three-gpu-pathtracer
+	url = https://github.com/bhouston/fidelity-kit-three-gpu-pathtracer.git

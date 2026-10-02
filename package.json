@@ -7,7 +7,7 @@
   "type": "module",
   "scripts": {
     "prepare": "husky",
-    "build": "tsc -b && pnpm -r --if-present --filter './packages/*' build",
+    "build": "pnpm --filter fidelity-kit-blender --filter fidelity-kit-three-gpu-pathtracer build && tsc -b && pnpm -r --if-present --filter './packages/*' build",
     "dev": "pnpm -r --parallel --stream dev",
     "tsc": "tsc -b",
     "format": "oxfmt .",

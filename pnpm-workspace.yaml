@@ -1,6 +1,8 @@
 packages:
   - packages/*
   - submodules/three-gpu-pathtracer
+  - submodules/fidelity-kit-blender
+  - submodules/fidelity-kit-three-gpu-pathtracer
 
 allowBuilds:
   esbuild: true

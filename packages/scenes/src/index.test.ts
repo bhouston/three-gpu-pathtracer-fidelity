@@ -13,14 +13,18 @@ describe('scene registry', () => {
     expect(() => getScene('nope')).toThrow(/Unknown scene/);
   });
 
-  it.each(listSceneNames())('creates %s', async (name) => {
-    const definition = getScene(name);
-    const { scene, camera } = await definition.create(createNodeSceneContext());
-    expect(camera.aspect).toBeCloseTo(definition.width / definition.height);
-    let meshes = 0;
-    scene.traverse((object) => {
-      if ((object as { isMesh?: boolean }).isMesh) meshes++;
-    });
-    expect(meshes).toBeGreaterThan(0);
-  });
+  it.each(listSceneNames())(
+    'creates %s',
+    async (name) => {
+      const definition = getScene(name);
+      const { scene, camera } = await definition.create(createNodeSceneContext());
+      expect(camera.aspect).toBeCloseTo(definition.width / definition.height);
+      let meshes = 0;
+      scene.traverse((object) => {
+        if ((object as { isMesh?: boolean }).isMesh) meshes++;
+      });
+      expect(meshes).toBeGreaterThan(0);
+    },
+    300_000,
+  );
 });

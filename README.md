@@ -32,6 +32,8 @@ Workflow rules (issues, branches, Conventional Commits, PRs, required checks) ar
 
 ```
 submodules/three-gpu-pathtracer  bhouston/three-gpu-pathtracer: both path tracers (WebGL and WebGPU)
+submodules/fidelity-kit-blender  bhouston/fidelity-kit-blender: Blender scene export and Cycles rendering
+submodules/fidelity-kit-three-gpu-pathtracer  bhouston/fidelity-kit-three-gpu-pathtracer: legacy WebGL rendering
 submodules/glTF-Sample-Assets    KhronosGroup/glTF-Sample-Assets: the models of the khronos-* / x-* scenes
 submodules/3d-demo-data          gkjohnson/3d-demo-data: the models and HDRs of the model-* scenes
 submodules/ldraw-parts-library   gkjohnson/ldraw-parts-library: LDraw parts and the LEGO models
@@ -72,7 +74,10 @@ and `createRenderer` in `src/index.ts` dispatches by name.
 
 Each render runs in its **own child process** (`render-process.ts`), because dawn and ANGLE don't share a process
 reliably. Headless GPU comes from `src/headless/webgpu.ts` (dawn) and `src/headless/webgl.ts` (ANGLE). `Math.random`
-is seeded, so renders are reproducible. Blender runs through `src/blender.ts` and `blender/render.py`.
+is seeded, so renders are reproducible. Blender runs through `src/blender.ts` and the pinned `fidelity-kit-blender/three` integration.
+The legacy WebGL renderer uses the pinned `fidelity-kit-three-gpu-pathtracer` integration.
+Both adapters build before the suite and use the shared Three.js install and pathtracer fork;
+the adapter's nested development submodule is not part of this workspace.
 
 | Command                               | Does                                                                                                            |
 | ------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
@@ -100,7 +105,7 @@ Not every renderer is rendered for every scene.
 ## Setup and checks
 
 ```bash
-git clone --recurse-submodules <repo>   # or: git submodule update --init
+git-dedup clone --recurse-submodules <repo>   # or: git-dedup submodule update --init
 pnpm install --frozen-lockfile          # Node 26 (.nvmrc), pnpm pinned in package.json
 pnpm build                              # tsc -b, then the packages
 pnpm tsc && pnpm lint && pnpm test --coverage
@@ -108,3 +113,28 @@ pnpm exec oxfmt <changed files>
 ```
 
 Submodules are marked `ignore = dirty`: commit inside the submodule, push it, then commit the updated pointer here.
+
+## Rendering integration migration
+
+Blender and legacy WebGL now use the fidelity-kit integrations. Output remains explicit sRGB with each scene's
+tone mapping and exposure, eight bounces and no denoising. Blender uses seed 1 and disables adaptive sampling
+to honor the requested sample count. Procedural environments are baked with the shared adapter utility.
+
+The suite always enables the Blender adapter's optional area-light, physical-camera depth-of-field and independent
+equirectangular background translations. These features are optional upstream; adapter adoption itself is the
+default rendering path here. Area lights retain radiance and unscaled dimensions, and camera apertures use millimeters.
+Ambient lights and finite punctual-light cutoffs are deliberately ignored with warnings, matching the reference
+pathtracer. Other unsupported features fail, including custom shaders, nonphysical light decay, blurred/GPU-only
+backgrounds and anamorphic depth of field. Animated skin/morph pose matching and advanced glTF extensions still
+need visual validation.
+
+Cycles defaults to automatic device selection. Use `pnpm cli render --renderers blender --blender-device cpu` when
+GPU memory is occupied by other renders, or select `gpu` explicitly.
+
+Actual smoke-render results and known blockers are recorded in
+[rendering integration validation](docs/rendering-integration-validation.md).
+
+The committed images still belong to the previous rendering pipeline. After merging this migration, regenerate
+all renderer/scene pairs, investigate any adapter diagnostics, then run `pnpm exec fidelity-kit process results`
+and commit the regenerated images together. Do not use `--missing-only`: existing images need replacement.
+Do not mix old references with new renders when evaluating regressions.
