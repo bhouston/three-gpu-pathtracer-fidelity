@@ -19,5 +19,8 @@ for (const source of [
    if (!/llvmpipe|softpipe/i.test(info)) throw new Error('Expected Mesa software WebGL');
    process.exit(0);`,
 ]) {
-  execFileSync(process.execPath, ['--input-type=module', '-e', source], { stdio: 'inherit' });
+  execFileSync(process.execPath, ['--input-type=module', '-e', source], {
+    stdio: 'inherit',
+    cwd: new URL('../packages/cli/', import.meta.url),
+  });
 }
