@@ -67,8 +67,10 @@ async function main(job: RenderJob): Promise<void> {
     const start = performance.now();
     seedRandom(); // before the scene and renderer draw any random numbers
     const setup = await create(ctx);
-    setup.camera.aspect = width / height;
-    setup.camera.updateProjectionMatrix();
+    if (job.width !== undefined || job.height !== undefined) {
+      setup.camera.aspect = width / height;
+      setup.camera.updateProjectionMatrix();
+    }
     const canvas = headless.createCanvas(width, height);
     if (job.renderer === 'blender') return renderBlenderJob(name, setup, canvas, width, height, start);
     const renderer = await createRenderer(job.renderer, canvas, setup, { width, height });
