@@ -21,4 +21,4 @@ Use `type(optional-scope): description`. Allowed types are `feat`, `fix`, `perf`
 
 Use Node 26 and the pinned pnpm version in `package.json`. Clone with submodules (`git clone --recurse-submodules`, or `git submodule update --init` afterwards), then run `pnpm install --frozen-lockfile`.
 
-CI checks builds, types, lint, and tests with coverage. Dependency audit findings appear as warnings so existing advisories remain visible without preventing unrelated fixes. Coverage is uploaded as an artifact.
+CI checks builds, types, lint, and tests with coverage. It initializes only the code submodules (`three-gpu-pathtracer` and the two fidelity-kit adapters), so tests that need the model submodules (creating every registry scene, LDraw loading) run only locally. Dependency audit findings appear as warnings so existing advisories remain visible without preventing unrelated fixes. Coverage is uploaded as an artifact.

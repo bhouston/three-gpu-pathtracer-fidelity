@@ -1,6 +1,18 @@
+import { readdirSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import { getScene, listSceneNames } from './index.js';
 import { createNodeSceneContext } from './node.js';
+
+/** The model submodules are large; CI checks out only the code submodules and skips loading every scene. */
+const assetSubmodules = ['glTF-Sample-Assets', '3d-demo-data', 'ldraw-parts-library'];
+const assetsAvailable = assetSubmodules.every((name) => {
+  try {
+    return readdirSync(fileURLToPath(new URL(`../../../submodules/${name}`, import.meta.url))).length > 0;
+  } catch {
+    return false;
+  }
+});
 
 describe('scene registry', () => {
   it('has unique names', () => {
@@ -13,7 +25,7 @@ describe('scene registry', () => {
     expect(() => getScene('nope')).toThrow(/Unknown scene/);
   });
 
-  it.each(listSceneNames())(
+  it.skipIf(!assetsAvailable).each(listSceneNames())(
     'creates %s',
     async (name) => {
       const definition = getScene(name);
