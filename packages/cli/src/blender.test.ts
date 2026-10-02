@@ -52,6 +52,12 @@ describe('Blender integration', () => {
     });
   });
 
+  it('passes the noise threshold to Cycles adaptive sampling', async () => {
+    adapter.renderScene.mockResolvedValue({ pixels: new Uint8Array(32) });
+    await renderBlender(setup(), { ...options, noiseThreshold: 0.005 });
+    expect(adapter.renderScene.mock.calls[0]![0]).toMatchObject({ samples: 16, adaptiveThreshold: 0.005 });
+  });
+
   it('preserves matching environment/background identity and parented camera world pose', async () => {
     const source = setup();
     const texture = new DataTexture(new Float32Array([1, 1, 1, 1]), 1, 1);

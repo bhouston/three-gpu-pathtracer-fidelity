@@ -5,7 +5,7 @@ import type { DataTexture, WebGLRenderer } from 'three';
 import type { SceneSetup } from '@pathtracer-fidelity/scenes';
 import type { LiveRenderer, RendererOptions } from './types.js';
 
-export { dequantizeAttributes } from 'fidelity-kit-three-gpu-pathtracer';
+export { assertNotAllBlack, dequantizeAttributes } from 'fidelity-kit-three-gpu-pathtracer';
 
 export const PATHTRACER_BOUNCES = 8;
 
