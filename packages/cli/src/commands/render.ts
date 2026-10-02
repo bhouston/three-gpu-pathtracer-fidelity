@@ -45,6 +45,8 @@ export const command = defineCommand({
     yargs
       .option('scenes', { type: 'string', default: '*', describe: 'Scene name glob(s), comma separated' })
       .option('renderers', { type: 'string', default: '*', describe: 'Renderer name glob(s), comma separated' })
+      .option('width', { type: 'number', describe: 'Override scene width in pixels' })
+      .option('height', { type: 'number', describe: 'Override scene height in pixels' })
       .option('samples', {
         type: 'number',
         default: DEFAULT_MAX_SAMPLES,
@@ -77,6 +79,11 @@ export const command = defineCommand({
         describe: 'Skip scene/renderer pairs whose render already exists',
       }),
   handler: async (argv) => {
+    for (const dimension of [argv.width, argv.height]) {
+      if (dimension !== undefined && (!Number.isInteger(dimension) || dimension < 16 || dimension > 8192)) {
+        throw new Error('Render dimensions must be integers between 16 and 8192');
+      }
+    }
     const scenes = selectNames(listSceneNames(), argv.scenes, 'scene');
     const renderers = selectNames(cliRendererNames, argv.renderers, 'renderer') as RenderJob['renderer'][];
     // one child process per renderer and scene: dawn and ANGLE don't share a process reliably, and GPU state leaked
@@ -90,6 +97,8 @@ export const command = defineCommand({
           scenes: [scene],
           outDir: argv.output,
           samples: argv.samples,
+          width: argv.width,
+          height: argv.height,
           minSamples: argv.minSamples,
           noiseThreshold: argv.noiseThreshold,
           cyclesNoiseThreshold: argv.cyclesNoiseThreshold,

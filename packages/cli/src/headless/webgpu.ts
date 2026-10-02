@@ -133,7 +133,10 @@ export function install(): void {
   // per-pass GPU timings well past wall-clock time when many short passes each round up. Safe in this
   // headless benchmark process (no browser sandbox to protect). allow_unsafe_apis is required to unlock it.
   Object.defineProperty(globalThis.navigator, 'gpu', {
-    value: create(['enable-dawn-features=allow_unsafe_apis,disable_timestamp_quantization']),
+    value: create([
+      'enable-dawn-features=allow_unsafe_apis,disable_timestamp_quantization',
+      ...(process.env.FIDELITY_SOFTWARE_RENDERING === '1' ? ['backend=vulkan'] : []),
+    ]),
     configurable: true,
   });
   scope.self ??= globalThis;

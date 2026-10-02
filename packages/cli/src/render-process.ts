@@ -15,6 +15,9 @@ export interface RenderJob {
   outDir: string;
   /** Maximum samples per pixel; the exact count when the relevant noise threshold is 0. */
   samples: number;
+  /** Optional resolution override for bounded headless and container renders. */
+  width?: number;
+  height?: number;
   /** Path tracers: never stop before this many samples. */
   minSamples?: number;
   /** Path tracers: stop once the percentile-tile noise estimate reaches this (sRGB, 0-1); 0 disables. */
@@ -57,10 +60,15 @@ async function main(job: RenderJob): Promise<void> {
   for (const name of job.scenes) await render(name);
 
   async function render(name: string): Promise<void> {
-    const { width, height, create } = getScene(name);
+    const definition = getScene(name);
+    const width = job.width ?? definition.width;
+    const height = job.height ?? definition.height;
+    const { create } = definition;
     const start = performance.now();
     seedRandom(); // before the scene and renderer draw any random numbers
     const setup = await create(ctx);
+    setup.camera.aspect = width / height;
+    setup.camera.updateProjectionMatrix();
     const canvas = headless.createCanvas(width, height);
     if (job.renderer === 'blender') return renderBlenderJob(name, setup, canvas, width, height, start);
     const renderer = await createRenderer(job.renderer, canvas, setup, { width, height });
