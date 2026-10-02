@@ -155,22 +155,23 @@ function removeFaintSurfaces(model: Object3D): void {
   }
 }
 
-/** The MecaBricks exports use two dark golds that read as muddy brown when path traced. */
-function mecaBricksGoldCorrection(model: Object3D): void {
-  for (const mesh of meshes(model)) {
-    const m = physical(mesh);
-    const hex = m.color.getHexString();
-    if (hex === '7f4c0e') {
-      m.color.set(0xc2801f).multiplyScalar(0.9);
-    } else if (hex === '613708') {
-      m.color.set(0xc2801f);
-      m.color.g *= 0.75;
-      m.color.b *= 0.75;
-    } else continue;
-    m.roughness = 0.45;
-    m.metalness = 0.6;
-  }
-}
+// ponytail: unused while the MecaBricks scenes are disabled
+// /** The MecaBricks exports use two dark golds that read as muddy brown when path traced. */
+// function mecaBricksGoldCorrection(model: Object3D): void {
+//   for (const mesh of meshes(model)) {
+//     const m = physical(mesh);
+//     const hex = m.color.getHexString();
+//     if (hex === '7f4c0e') {
+//       m.color.set(0xc2801f).multiplyScalar(0.9);
+//     } else if (hex === '613708') {
+//       m.color.set(0xc2801f);
+//       m.color.g *= 0.75;
+//       m.color.b *= 0.75;
+//     } else continue;
+//     m.roughness = 0.45;
+//     m.metalness = 0.6;
+//   }
+// }
 
 const LDRAW = 'submodules/ldraw-parts-library/models';
 const THREE_LDRAW = 'assets/models/ldraw';
@@ -290,23 +291,25 @@ const entries: ModelEntry[] = [
       convertEmissivePlanesToLights(model);
     },
   },
-  { name: 'lone-monk', file: `${DEMO}/blender-demo-files/lone-monk.glb`, stage: 'none' },
+  // ponytail: disabled, very slow to render; re-enable when needed
+  //   { name: 'lone-monk', file: `${DEMO}/blender-demo-files/lone-monk.glb`, stage: 'none' },
   {
     name: 'stelton-theo-teapot-set',
     file: `${DEMO}/blendswap/teapot.glb`,
     stage: 'none',
     envMap: 'hdri/vestibule_2k.hdr',
   },
-  {
-    name: 'dining-room',
-    file: `${DEMO}/blendswap/dining-room.glb`,
-    stage: 'none',
-    envMap: 'none',
-    // aperture refit from the source scene's f/6 at 35mm to the normalized model scale
-    bokehSize: 1,
-    focusDistance: 0.74,
-    post: convertEmissivePlanesToLights,
-  },
+  // ponytail: disabled, too large; re-enable when needed
+  //  {
+  //    name: 'dining-room',
+  //    file: `${DEMO}/blendswap/dining-room.glb`,
+  //    stage: 'none',
+  //    envMap: 'none',
+  //    // aperture refit from the source scene's f/6 at 35mm to the normalized model scale
+  //    bokehSize: 1,
+  //    focusDistance: 0.74,
+  //    post: convertEmissivePlanesToLights,
+  //  },
   {
     name: 'dodge-challenger',
     file: `${DEMO}/blendswap/dodge-challenger.glb`,
@@ -389,20 +392,21 @@ const entries: ModelEntry[] = [
       removeFaintSurfaces(model);
     },
   },
-  {
-    name: 'halo-twist-ring',
-    file: `${DEMO}/ring-twist-halo/scene.glb`,
-    post(model) {
-      convertOpacityToTransmission(model);
-      for (const mesh of meshes(model)) {
-        const m = physical(mesh);
-        if (!(m instanceof MeshPhysicalMaterial) || m.transmission !== 1) continue;
-        m.metalness = 0;
-        m.ior = 1.8;
-        m.color.set(0xffffff);
-      }
-    },
-  },
+  // ponytail: disabled, too large/slow; re-enable when needed
+  // {
+  //   name: 'halo-twist-ring',
+  //   file: `${DEMO}/ring-twist-halo/scene.glb`,
+  //   post(model) {
+  //     convertOpacityToTransmission(model);
+  //     for (const mesh of meshes(model)) {
+  //       const m = physical(mesh);
+  //       if (!(m instanceof MeshPhysicalMaterial) || m.transmission !== 1) continue;
+  //       m.metalness = 0;
+  //       m.ior = 1.8;
+  //       m.color.set(0xffffff);
+  //     }
+  //   },
+  // },
   { name: 'flight-helmet', file: 'submodules/glTF-Sample-Assets/Models/FlightHelmet/glTF/FlightHelmet.gltf' },
   {
     name: 'dragon',
@@ -423,22 +427,24 @@ const entries: ModelEntry[] = [
       for (const mesh of meshes(model)) mesh.material = material;
     },
   },
-  {
-    name: 'crab-sculpture',
-    file: `${DEMO}/threedscans/Crab.glb`,
-    rotation: [(-2 * PI) / 4, 0, 0],
-    post(model) {
-      for (const mesh of meshes(model)) physical(mesh).color.set(0xdddddd);
-    },
-  },
+  // ponytail: disabled, too large/slow; re-enable when needed
+  // {
+  //   name: 'crab-sculpture',
+  //   file: `${DEMO}/threedscans/Crab.glb`,
+  //   rotation: [(-2 * PI) / 4, 0, 0],
+  //   post(model) {
+  //     for (const mesh of meshes(model)) physical(mesh).color.set(0xdddddd);
+  //   },
+  // },
 
   ldraw('allied-avenger', '6887-1 - Allied Avenger.mpd'),
-  {
-    name: 'lego-apollo-11-lander',
-    file: `${DEMO}/mecabricks/apollo-11-lunar-lander/lunar-lander.dae`,
-    post: mecaBricksGoldCorrection,
-    rotation: [0, -PI * 0.6, 0],
-  },
+  // ponytail: disabled, too large/slow; re-enable when needed
+  // {
+  //   name: 'lego-apollo-11-lander',
+  //   file: `${DEMO}/mecabricks/apollo-11-lunar-lander/lunar-lander.dae`,
+  //   post: mecaBricksGoldCorrection,
+  //   rotation: [0, -PI * 0.6, 0],
+  // },
   ldraw('b-wing-starfighter', '10227-1 - B-wing Starfighter.mpd'),
   ldraw('bennys-spaceship', '70816 - Bennys Spaceship Spa_kOdSy6E.mpd'),
   ldraw('blizzard-baron', '6879-1 - Blizzard Baron.mpd'),
@@ -450,11 +456,12 @@ const entries: ModelEntry[] = [
     rotation: [PI, -PI / 2, 0],
     post: ldrawGlass,
   },
-  {
-    name: 'lego-nasa-mars-rover',
-    file: `${DEMO}/mecabricks/nasa-mars-curiosity-rover.dae`,
-    post: mecaBricksGoldCorrection,
-  },
+  // ponytail: disabled, too large/slow; re-enable when needed
+  // {
+  //   name: 'lego-nasa-mars-rover',
+  //   file: `${DEMO}/mecabricks/nasa-mars-curiosity-rover.dae`,
+  //   post: mecaBricksGoldCorrection,
+  // },
   ldraw('stellar-recon-voyager', '6956-1 - Stellar Recon Voyager.mpd'),
   ldraw('super-model-building-instruction', '6861-2 - Super Model Building Instruction.mpd'),
   { name: 'lego-ucs-at-st', file: `${THREE_LDRAW}/10174-1-ImperialAT-ST-UCS.mpd_Packed.mpd`, post: ldrawGlass },

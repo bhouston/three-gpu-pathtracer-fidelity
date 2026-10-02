@@ -52,6 +52,7 @@ export const command = defineCommand({
     for (const renderer of renderers) {
       for (const scene of scenes) {
         if (argv.missingOnly && existsSync(renderPath(scene, renderer, argv.output))) continue;
+        console.log(`${scene} | ${renderer}: starting`);
         const code = await run({ renderer, scenes: [scene], outDir: argv.output, samples: argv.samples });
         if (code !== 0) {
           console.error(`${scene} | ${renderer} failed (exit code ${code})`);
