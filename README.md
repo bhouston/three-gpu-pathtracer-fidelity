@@ -114,6 +114,13 @@ pnpm exec oxfmt <changed files>
 
 Submodules are marked `ignore = dirty`: commit inside the submodule, push it, then commit the updated pointer here.
 
+Blender Cycles renders need Blender 4.0+ installed separately. Discovery tries `BLENDER_EXECUTABLE`, then `blender` on
+PATH, then the standard install locations (macOS `/Applications`, Windows `%ProgramFiles%\Blender Foundation`).
+
+**Windows:** install the official build (`winget install BlenderFoundation.Blender`). The Microsoft Store build can't
+run headless. Enable long paths before cloning (`git config --global core.longpaths true`), because the asset submodules
+have deep paths. Headless WebGL runs on ANGLE's Direct3D backend, and its HLSL `X4000` compiler warnings are harmless.
+
 ## Rendering integration migration
 
 Blender and legacy WebGL now use the fidelity-kit integrations. Output remains explicit sRGB with each scene's
