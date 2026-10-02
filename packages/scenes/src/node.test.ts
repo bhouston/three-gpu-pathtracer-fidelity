@@ -1,10 +1,17 @@
+import { existsSync } from 'node:fs';
 import { mkdtemp, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import sharp from 'sharp';
 import type { DataTexture, Mesh, MeshStandardMaterial } from 'three';
 import { describe, expect, it } from 'vitest';
 import { createNodeSceneContext } from './node.js';
+
+/** LDraw loading preloads the color table from the parts library, a model submodule CI doesn't check out. */
+const ldrawLibrary = existsSync(
+  fileURLToPath(new URL('../../../submodules/ldraw-parts-library/colors/ldcfgalt.ldr', import.meta.url)),
+);
 
 describe('Node legacy asset loading', () => {
   it('decodes Collada textures before returning without installing a DOM', async () => {
@@ -52,7 +59,7 @@ describe('Node legacy asset loading', () => {
     }
   });
 
-  it('resolves embedded LDraw subparts with Windows separators', async () => {
+  it.skipIf(!ldrawLibrary)('resolves embedded LDraw subparts with Windows separators', async () => {
     const dir = await mkdtemp(path.join(tmpdir(), 'fidelity-ldraw-'));
     try {
       await writeFile(
