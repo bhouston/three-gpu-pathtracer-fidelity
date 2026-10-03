@@ -28,16 +28,17 @@ The pinned pathtracer fork contains both commits from [upstream PR #862](https:/
 
 ## Files to read or reuse
 
-| File                                                              | Responsibility                                                                       |
-| ----------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
-| [`docker/Dockerfile`](../docker/Dockerfile)                       | Install Linux dependencies and Blender, build the suite, generate the scene catalog. |
-| [`docker/entrypoint.sh`](../docker/entrypoint.sh)                 | Select Lavapipe, then run the farm wrapper or an explicitly supplied command.        |
-| [`docker/check-software.mjs`](../docker/check-software.mjs)       | Verify that Dawn and WebGL report software adapters.                                 |
-| [`docker/dockergrid.py`](../docker/dockergrid.py)                 | Declare inputs, fetch task parameters, run one render, validate and upload its AVIF. |
-| [`docker/farm.py`](../docker/farm.py)                             | Exchange farm credentials and upload artifacts through the task API.                 |
-| [`scripts/dockergrid-batch.mjs`](../scripts/dockergrid-batch.mjs) | Generate one task per selected example and engine using CLI defaults.                |
-| [`scripts/docker-context.py`](../scripts/docker-context.py)       | Package tracked sources and initialized submodules into a build context.             |
-| [`results/fidelity.json`](../results/fidelity.json)               | Declare the renderers, references, and comparison configuration.                     |
+| File                                                                | Responsibility                                                                       |
+| ------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| [`docker/Dockerfile`](../docker/Dockerfile)                         | Install Linux dependencies and Blender, build the suite, generate the scene catalog. |
+| [`docker/entrypoint.sh`](../docker/entrypoint.sh)                   | Select Lavapipe, then run the farm wrapper or an explicitly supplied command.        |
+| [`docker/check-software.mjs`](../docker/check-software.mjs)         | Verify that Dawn and WebGL report software adapters.                                 |
+| [`docker/dockergrid.py`](../docker/dockergrid.py)                   | Declare inputs, fetch task parameters, run one render, validate and upload its AVIF. |
+| [`docker/farm.py`](../docker/farm.py)                               | Exchange farm credentials and upload artifacts through the task API.                 |
+| [`scripts/dockergrid-collect.py`](../scripts/dockergrid-collect.py) | Validate and download task AVIFs into the local fidelity results hierarchy.          |
+| [`scripts/dockergrid-batch.mjs`](../scripts/dockergrid-batch.mjs)   | Generate one task per selected example and engine using CLI defaults.                |
+| [`scripts/docker-context.py`](../scripts/docker-context.py)         | Package tracked sources and initialized submodules into a build context.             |
+| [`results/fidelity.json`](../results/fidelity.json)                 | Declare the renderers, references, and comparison configuration.                     |
 
 To adapt this pattern for another project, keep the two container entry modes: `--describe` prints a JSON schema without starting rendering, while default mode runs one farm task and reports its outputs. Replace the scene catalog and rendering commands with your own workload. DockerGrid reads the schema rather than relying on renderer-specific frontend code.
 
@@ -174,7 +175,32 @@ Each task renders one scene and engine into a fresh temporary directory. Existin
 
 Every successful task uploads exactly one `<scene>.<renderer>.avif`, with MIME type `image/avif` and role `primary`, including WebGL and Blender renders. Its name preserves scene and engine identity when downloading a batch into one directory. The task does not upload sidecars, configuration, metrics, deltas, or archives.
 
-To compare a completed batch locally, place the downloaded AVIFs into `results/<scene>/beauty/<renderer>.avif`, add the repository's `results/fidelity.json`, and run `pnpm exec fidelity-kit process results`. Comparison processing is separate from cloud rendering. Use matching settings and enough samples before interpreting PSNR or difference images as regression evidence.
+Export the job and fresh signed download URLs from a built DockerGrid checkout:
+
+```sh
+pnpm farm jobs get JOB_ID > /tmp/fidelity-job.json
+pnpm farm jobs outputs JOB_ID > /tmp/fidelity-outputs.json
+```
+
+Then, from this repository, collect the images into a fresh results directory:
+
+```sh
+python3 scripts/dockergrid-collect.py \
+  --job /tmp/fidelity-job.json --outputs /tmp/fidelity-outputs.json \
+  --output /tmp/fidelity-results --require-complete
+```
+
+The collector validates each output against its task's scene and engine, uses the highest available attempt, verifies AVIF MIME type and exact byte size, and downloads with at most eight workers (`--workers 1` through `8`). It restores `<scene>/beauty/<renderer>.avif` beneath the selected output directory, matching the CLI results layout and copies `results/fidelity.json` there. Invalid exports or failed downloads exit with an error; failed downloads never replace an existing image. Jobs with repeated scene/engine pairs are rejected because they would share a local destination.
+
+Omit `--require-complete` to collect currently available outputs while the batch runs. The JSON report marks the collection as partial, lists missing scene/engine pairs, and includes job status; stderr warns that comparison processing should wait. Re-export both JSON files and rerun when more tasks finish. Signed URLs expire, so refresh the outputs export if downloads fail. `--require-complete` rejects a job that has not succeeded or still lacks any expected output before writing files.
+
+Once the collection is complete, calculate comparisons separately:
+
+```sh
+pnpm exec fidelity-kit process /tmp/fidelity-results
+```
+
+The collector does not compute metrics, deltas, or archives. Use matching settings and enough samples before interpreting PSNR or difference images as regression evidence.
 
 ## Troubleshooting
 
