@@ -167,7 +167,7 @@ occupied by other renders, or select `gpu` explicitly.
 Actual smoke-render results and known blockers are recorded in
 [rendering integration validation](docs/rendering-integration-validation.md).
 
-For remote CPU rendering with Dawn, WebGL and Blender, see [DockerGrid packaging and submission](docs/dockergrid.md).
+For remote CPU rendering with Dawn, WebGL and Blender, see [Docker and DockerGrid guide](docs/dockergrid.md), which explains the software backends, container layout, local rendering, remote submission, and how to interpret outputs.
 
 The committed images still belong to the previous rendering pipeline. After merging this migration, regenerate
 all renderer/scene pairs, investigate any adapter diagnostics, then run `pnpm exec fidelity-kit process results`
