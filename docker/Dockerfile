@@ -1,7 +1,7 @@
 FROM node:26-trixie-slim
 RUN apt-get update && apt-get install -y --no-install-recommends \
     python3 make g++ curl ca-certificates xz-utils \
-    libegl1 libgles2 libgl1-mesa-dri libvulkan1 mesa-vulkan-drivers \
+    libegl1 libgles2 libgl1 libgl1-mesa-dri libvulkan1 mesa-vulkan-drivers \
     libx11-6 libxi6 libxrender1 libxfixes3 libxkbcommon0 libsm6 libice6 libxxf86vm1 libgomp1 \
     && rm -rf /var/lib/apt/lists/*
 ARG BLENDER_VERSION=4.5.3
