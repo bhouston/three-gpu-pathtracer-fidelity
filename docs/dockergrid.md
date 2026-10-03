@@ -20,8 +20,8 @@ From a built DockerGrid checkout:
 ```sh
 export DOCKERGRID_API_URL=https://dockergrid-api-50046401737.us-central1.run.app
 pnpm farm auth login
-pnpm farm images register --label pathtracer-fidelity --context /tmp/fidelity-context.tar.gz
-pnpm farm submit pathtracer-fidelity --scene gi-basic --samples 4 --width 128 --height 128 --renderers all --cpu 4 --memory-gib 8 --max-retries 0
+pnpm farm images register --label pathtracer-fidelity-cpu --context /tmp/fidelity-context.tar.gz
+pnpm farm submit pathtracer-fidelity-cpu --scene gi-basic --samples 4 --width 128 --height 128 --renderers all --cpu 4 --memory-gib 8 --max-retries 0
 ```
 
 Registration builds the image remotely and discovers its input schema with `--describe`. The CLI and generated web form use that schema. Use **4 CPUs / 8 GiB per task**, and start with a small scene and sample count. Multiple tasks multiply that allocation; software path tracing can be slow.
@@ -35,3 +35,9 @@ Each task renders into a fresh temporary directory. Existing committed reference
 For an independent Linux smoke check, run the image's `node docker/check-software.mjs` command; it verifies both adapter identities before rendering. This command needs the image's entrypoint to set its Vulkan ICD environment.
 
 Small sample counts verify execution and integration, not convergence or fidelity equivalence. Use sufficient samples and matching settings before treating RMSE and delta images as regression evidence.
+
+## Verified preview run
+
+The public preview image `pathtracer-fidelity-cpu` completed [job c64ad9fb-630c-4373-a33e-d426faa15a57](https://dockergrid-dashboard-50046401737.us-central1.run.app/jobs/c64ad9fb-630c-4373-a33e-d426faa15a57) on October 2, 2026, with 4 CPUs / 8 GiB, `gi-basic`, 64×64 pixels, and two completed samples per engine. The task produced 18 artifacts: three AVIF renders, four PSNR metric files, four difference images, metadata, and the complete archive. Every artifact downloaded successfully; all seven image previews loaded in the dashboard. Cloud Run reported the requested CPU and memory limits.
+
+Dawn and WebGL software adapter checks passed in Linux Cloud Build. The final Cloud Run task rendered WebGPU in 15.4 seconds, WebGL in 3.6 seconds, and Blender CPU in 5.4 seconds, excluding setup and provisioning. This is an execution smoke test, not a converged fidelity baseline.
