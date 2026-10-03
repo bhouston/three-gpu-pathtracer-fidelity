@@ -10,7 +10,7 @@ RUN curl -fsSL "https://download.blender.org/release/Blender4.5/blender-${BLENDE
     && echo "${BLENDER_SHA256}  /tmp/blender.tar.xz" | sha256sum -c - \
     && mkdir /opt/blender && tar -xJf /tmp/blender.tar.xz --strip-components=1 -C /opt/blender \
     && rm /tmp/blender.tar.xz
-ENV BLENDER_EXECUTABLE=/opt/blender/blender \
+ENV BLENDER_EXECUTABLE=/opt/blender/blender FIDELITY_BLENDER_TIMEOUT_SECONDS=21600 \
     FIDELITY_SOFTWARE_RENDERING=1 LIBGL_ALWAYS_SOFTWARE=1 GALLIUM_DRIVER=llvmpipe \
     LP_NUM_THREADS=8 OMP_NUM_THREADS=8 XDG_RUNTIME_DIR=/tmp \
     HUSKY=0 CI=true

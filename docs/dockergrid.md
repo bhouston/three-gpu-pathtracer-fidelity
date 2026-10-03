@@ -166,7 +166,7 @@ Twenty simultaneous tasks request 160 vCPUs, within the tested preview project's
 
 Sampling defaults match the CLI. `minSamples` and `noiseThreshold` apply to the path tracers; Blender uses `cyclesNoiseThreshold`. Dimensions come from the selected scene and are never overridden by the wrapper.
 
-The wrapper exchanges the execution bootstrap credential for one task-attempt token and its parameters. It validates those parameters and, only for Blender, runs Blender's version command with a 60-second cold-start allowance. This loads native libraries before the adapter's five-second discovery probe.
+The wrapper exchanges the execution bootstrap credential for one task-attempt token and its parameters. It validates those parameters and, only for Blender, runs Blender's version command with a 60-second cold-start allowance. This loads native libraries before the adapter's five-second discovery probe. The container sets `FIDELITY_BLENDER_TIMEOUT_SECONDS=21600`, allowing Blender to render for up to six hours to match the farm task limit. Outside the container, leaving this optional environment variable unset retains the adapter's default timeout; explicit values must be integer seconds from 1 to 21600.
 
 Each task renders one scene and engine into a fresh temporary directory. Existing committed references are not overwritten. The wrapper never invokes comparison processing. The CLI rejects black frames; a failed render, missing or empty AVIF, or failed upload fails the attempt. Logs record the selected scene, engine, sampling settings, and output name. Outputs are uploaded before completion is reported.
 
