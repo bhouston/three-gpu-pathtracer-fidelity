@@ -28,6 +28,7 @@ jobs:
       - run: pnpm tsc
       - run: pnpm lint
       - run: pnpm test --coverage
+      - run: python3 -m unittest discover -s docker -p 'test_*.py' -v
       - name: Audit dependencies
         id: audit
         continue-on-error: true

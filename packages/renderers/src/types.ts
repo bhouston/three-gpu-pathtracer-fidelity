@@ -14,10 +14,13 @@ export interface RendererOptions {
 export interface LiveRenderer {
   readonly name: RendererName;
   readonly renderer: WebGPURenderer | WebGLRenderer;
-  /** Accumulated path-traced samples. */
+  /** Render updates; wavefront updates advance bounces. Query completed samples when available. */
   readonly frames: number;
-  /** Renders one frame / one full-frame sample to the canvas. */
+  /** Advances and presents the renderer. Wavefront paths need several updates to complete. */
   render(): void;
+  /** Wavefront backends complete paths over multiple updates; cap and measure actual samples. */
+  setSampleLimit?(samples: number): void;
+  getCompletedSamples?(): Promise<number>;
   /** Resizes the drawing buffer and the camera aspect. */
   setSize(width: number, height: number): void;
   /** Adopts a new camera pose (pass the scene camera after moving it, e.g. from OrbitControls); restarts path tracing. */
