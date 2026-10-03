@@ -1,13 +1,11 @@
 #!/usr/bin/env python3
 """Run the fidelity CLI as one CPU-only DockerGrid task; describe needs only stdlib."""
 import json
-import mimetypes
+import math
 import os
 from pathlib import Path
-import shutil
 import subprocess
 import sys
-import tarfile
 import tempfile
 
 from farm import Farm
@@ -32,18 +30,15 @@ def describe(root=ROOT):
             "additionalProperties": False,
             "properties": {
                 "scene": {"type": "string", "enum": scene_names(root), "default": "gi-basic"},
-                "samples": {"type": "integer", "minimum": 1, "maximum": 4096, "default": 4},
-                "renderers": {"type": "string", "enum": ["all", *RENDERERS], "default": "all"},
-                "width": {"type": "integer", "minimum": 16, "maximum": 1024},
-                "height": {"type": "integer", "minimum": 16, "maximum": 1024},
+                "renderer": {"type": "string", "enum": list(RENDERERS), "default": "webgpu-new"},
+                "samples": {"type": "integer", "minimum": 1, "maximum": 4096, "default": 4096},
+                "minSamples": {"type": "integer", "minimum": 0, "maximum": 4096, "default": 128},
+                "noiseThreshold": {"type": "number", "minimum": 0, "maximum": 1, "default": 0.005},
+                "cyclesNoiseThreshold": {"type": "number", "minimum": 0, "maximum": 1, "default": 0.005},
             },
         },
         "outputHints": [
-            {"role": "primary", "mimeType": "image/avif", "description": "WebGPU render"},
-            {"role": "reference", "mimeType": "image/avif", "description": "WebGL or Blender reference"},
-            {"role": "metrics", "mimeType": "application/json", "description": "Fidelity comparison metrics"},
-            {"role": "delta", "mimeType": "image/webp", "description": "Comparison difference images"},
-            {"role": "archive", "mimeType": "application/gzip", "description": "Complete results directory"},
+            {"role": "primary", "mimeType": "image/avif", "description": "Selected scene and renderer at native dimensions"},
         ],
         "gpu": "none",
     }
@@ -56,91 +51,68 @@ def integer(params, name, default, minimum, maximum):
     return value
 
 
+def threshold(params, name):
+    value = params.get(name, 0.005)
+    if type(value) not in (int, float) or not math.isfinite(value) or not 0 <= value <= 1:
+        raise ValueError(f"{name} must be a finite number from 0 to 1")
+    return value
+
+
 def parameters(params, root):
-    if not isinstance(params, dict) or set(params) - {"scene", "samples", "renderers", "width", "height"}:
+    allowed = {"scene", "renderer", "samples", "minSamples", "noiseThreshold", "cyclesNoiseThreshold"}
+    if not isinstance(params, dict) or set(params) - allowed:
         raise ValueError("Unexpected task parameters")
     scene = params.get("scene", "gi-basic")
     if scene not in scene_names(root):
         raise ValueError("Scene is not available in this image")
     # A registry ID must identify exactly one scene, never a CLI glob or filesystem traversal.
-    if not isinstance(scene, str) or any(character in scene for character in "/*?[]\\") or scene in (".", ".."):
+    if not isinstance(scene, str) or any(character in scene for character in "/,*?[]\\") or scene in (".", ".."):
         raise ValueError("Scene name must identify one scene")
-    selection = params.get("renderers", "all")
-    if selection not in ("all", *RENDERERS):
+    renderer = params.get("renderer", "webgpu-new")
+    if renderer not in RENDERERS:
         raise ValueError("Unsupported renderer selection")
-    selected = RENDERERS if selection == "all" else (selection,)
-    samples = integer(params, "samples", 4, 1, 4096)
-    dimensions = {name: integer(params, name, None, 16, 1024) for name in ("width", "height") if name in params}
-    return scene, selected, samples, dimensions
+    sampling = {
+        "samples": integer(params, "samples", 4096, 1, 4096),
+        "min-samples": integer(params, "minSamples", 128, 0, 4096),
+        "noise-threshold": threshold(params, "noiseThreshold"),
+        "cycles-noise-threshold": threshold(params, "cyclesNoiseThreshold"),
+    }
+    return scene, renderer, sampling
 
 
-def require_output(path):
-    if path.is_symlink() or not path.is_file() or path.stat().st_size == 0:
+def require_output(path, results):
+    if path.is_symlink() or not path.resolve().is_relative_to(results.resolve()) or not path.is_file() or path.stat().st_size == 0:
         raise RuntimeError(f"Missing or empty required output: {path.name}")
 
 
-def artifact_type(path):
-    if path.name == "webgpu-new.avif":
-        return "image/avif", "primary"
-    if path.suffix == ".avif":
-        return "image/avif", "reference"
-    if path.name.endswith(".metrics.json"):
-        return "application/json", "metrics"
-    if path.name.endswith(".delta.webp"):
-        return "image/webp", "delta"
-    if path.suffix == ".json":
-        return "application/json", "configuration" if path.name == "fidelity.json" else "metadata"
-    return mimetypes.guess_type(path.name)[0] or "application/octet-stream", None
-
-
 def run_task(farm, root):
-    scene, selected, samples, dimensions = parameters(farm.params, root)
-    if "blender" in selected:
+    scene, renderer, sampling = parameters(farm.params, root)
+    context = f"scene={scene} renderer={renderer}"
+    print(f"DockerGrid render starting: {context}; native scene dimensions; sampling={sampling}", flush=True)
+    if renderer == "blender":
         # Cloud Run loads native libraries lazily. Warm them before the adapter's
-        # five-second version probe and before CPU software graphics compete for cores.
+        # five-second version probe, only when this task actually uses Blender.
         subprocess.run([os.environ.get("BLENDER_EXECUTABLE", "blender"), "--version"], cwd=root, check=True, timeout=60)
     with tempfile.TemporaryDirectory(prefix="dockergrid-fidelity-") as directory:
         results = Path(directory) / "results"
         results.mkdir()
-        shutil.copyfile(root / "results" / "fidelity.json", results / "fidelity.json")
         command = [
             "node", str(root / "packages" / "cli" / "dist" / "bin.js"), "render",
-            "--scenes", scene, "--renderers", ",".join(selected),
-            "--samples", str(samples), "--min-samples", "1", "--noise-threshold", "0",
-            "--cycles-noise-threshold", "0", "--blender-device", "cpu", "--output", str(results),
+            "--scenes", scene, "--renderers", renderer,
+            "--blender-device", "cpu", "--output", str(results),
         ]
-        for name, value in dimensions.items():
+        for name, value in sampling.items():
             command.extend([f"--{name}", str(value)])
-        # Default subprocess stdio is inherited: Cloud Logging captures every renderer's logs.
+        # The CLI validates black frames; inherited stdio sends renderer logs to Cloud Logging.
         subprocess.run(command, cwd=root, check=True)
-        beauty = results / scene / "beauty"
-        for renderer in selected:
-            require_output(beauty / f"{renderer}.avif")
-        if len(selected) == len(RENDERERS):
-            subprocess.run([str(root / "node_modules" / ".bin" / "fidelity-kit"), "process", str(results)], cwd=root, check=True)
-            config = json.loads((results / "fidelity.json").read_text())
-            references = [item["id"] for item in config["renderers"] if item.get("reference") and item["id"] in selected]
-            if not references:
-                raise RuntimeError("Fidelity configuration declares no selected reference renderers")
-            for reference in references:
-                for renderer in selected:
-                    if renderer != reference:
-                        for suffix in ("metrics.json", "delta.webp"):
-                            require_output(beauty / f"{renderer}.vs-{reference}.{suffix}")
-        artifacts = []
-        for path in sorted(results.rglob("*")):
-            if path.is_symlink():
-                raise RuntimeError("Output symlinks are not allowed")
-            if path.is_file():
-                artifacts.append(path)
-        archive = Path(directory) / "outputs.tar.gz"
-        with tarfile.open(archive, "w:gz") as bundle:
-            for path in artifacts:
-                bundle.add(path, arcname=str(path.relative_to(results)), recursive=False)
-        for path in artifacts:
-            mime_type, role = artifact_type(path)
-            farm.output(path, mime_type, role)
-        farm.output(archive, "application/gzip", "archive")
+        image = results / scene / "beauty" / f"{renderer}.avif"
+        require_output(image, results)
+        # The farm uses the basename. Preserve scene and engine identity across batch downloads.
+        output = Path(directory) / f"{scene}.{renderer}.avif"
+        image.rename(output)
+        print(f"DockerGrid uploading: {context}; output={output.name}; bytes={output.stat().st_size}", flush=True)
+        farm.output(output, "image/avif", "primary")
+        print(f"DockerGrid render completed: {context}", flush=True)
 
 
 def main(argv=None):
