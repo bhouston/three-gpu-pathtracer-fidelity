@@ -2,6 +2,7 @@
 """Run the fidelity CLI as one CPU-only DockerGrid task; describe needs only stdlib."""
 import json
 import mimetypes
+import os
 from pathlib import Path
 import shutil
 import subprocess
@@ -94,6 +95,10 @@ def artifact_type(path):
 
 def run_task(farm, root):
     scene, selected, samples, dimensions = parameters(farm.params, root)
+    if "blender" in selected:
+        # Cloud Run loads native libraries lazily. Warm them before the adapter's
+        # five-second version probe and before CPU software graphics compete for cores.
+        subprocess.run([os.environ.get("BLENDER_EXECUTABLE", "blender"), "--version"], cwd=root, check=True, timeout=60)
     with tempfile.TemporaryDirectory(prefix="dockergrid-fidelity-") as directory:
         results = Path(directory) / "results"
         results.mkdir()

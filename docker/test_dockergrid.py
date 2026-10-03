@@ -37,6 +37,8 @@ class DockerGridTests(unittest.TestCase):
                 self.archive_names = archive.getnames()
 
     def render_outputs(self, command, **kwargs):
+        if command[-1] == "--version":
+            return subprocess.CompletedProcess(command, 0)
         if command[0] == "node":
             root = Path(command[command.index("--output") + 1])
             scene = command[command.index("--scenes") + 1]
@@ -83,14 +85,16 @@ class DockerGridTests(unittest.TestCase):
 
     def test_all_runs_exact_four_samples_and_uploads_every_file_with_archive(self):
         run = self.main(self.render_outputs)
-        self.assertEqual(run.call_count, 2)
-        command = run.call_args_list[0].args[0]
+        self.assertEqual(run.call_count, 3)
+        self.assertEqual(run.call_args_list[0].args[0][-1], "--version")
+        self.assertEqual(run.call_args_list[0].kwargs, {"cwd": self.root, "check": True, "timeout": 60})
+        command = run.call_args_list[1].args[0]
         for flag, expected in (("--samples", "4"), ("--min-samples", "1"), ("--noise-threshold", "0"), ("--cycles-noise-threshold", "0"), ("--blender-device", "cpu")):
             self.assertEqual(command[command.index(flag) + 1], expected)
         self.assertNotIn("--width", command)
         self.assertNotIn("--height", command)
-        self.assertEqual(run.call_args_list[0].kwargs, {"cwd": self.root, "check": True})
-        self.assertEqual(run.call_args_list[1].args[0][1], "process")
+        self.assertEqual(run.call_args_list[1].kwargs, {"cwd": self.root, "check": True})
+        self.assertEqual(run.call_args_list[2].args[0][1], "process")
         roles = [item[2] for item in self.uploaded]
         self.assertEqual(roles.count("primary"), 1)
         self.assertEqual(roles.count("reference"), 2)
@@ -111,7 +115,7 @@ class DockerGridTests(unittest.TestCase):
                 self.uploaded.clear()
                 self.farm.params = {"renderers": renderer, "samples": 12, "width": 64, "height": 96}
                 run = self.main(self.render_outputs)
-                self.assertEqual(run.call_count, 1)
+                self.assertEqual(run.call_count, 2 if renderer == "blender" else 1)
                 command = run.call_args.args[0]
                 for flag, expected in (("--renderers", renderer), ("--samples", "12"), ("--width", "64"), ("--height", "96")):
                     self.assertEqual(command[command.index(flag) + 1], expected)
@@ -126,6 +130,13 @@ class DockerGridTests(unittest.TestCase):
         self.farm.complete.assert_called_once_with(error)
         self.farm.output.assert_not_called()
 
+    def test_blender_cold_start_timeout_fails_before_rendering(self):
+        error = subprocess.TimeoutExpired(["blender", "--version"], 60)
+        with self.assertRaises(subprocess.TimeoutExpired):
+            self.main(error)
+        self.farm.complete.assert_called_once_with(error)
+        self.farm.output.assert_not_called()
+
     def test_success_exit_without_selected_images_is_failure(self):
         with self.assertRaisesRegex(RuntimeError, "Missing or empty required output") as caught:
             self.main(lambda *_args, **_kwargs: None)
@@ -135,6 +146,8 @@ class DockerGridTests(unittest.TestCase):
     def test_partial_renderer_output_is_failure(self):
         def partial(command, **kwargs):
             self.render_outputs(command, **kwargs)
+            if command[-1] == "--version":
+                return
             results = Path(command[command.index("--output") + 1])
             (results / "gi-basic" / "beauty" / "blender.avif").unlink()
         with self.assertRaisesRegex(RuntimeError, "blender.avif"):
@@ -152,7 +165,7 @@ class DockerGridTests(unittest.TestCase):
 
     def test_processing_failure_reports_failure(self):
         def failed_metrics(command, **kwargs):
-            if command[0] != "node":
+            if command[0] != "node" and command[-1] != "--version":
                 raise subprocess.CalledProcessError(1, command)
             return self.render_outputs(command, **kwargs)
         with self.assertRaises(subprocess.CalledProcessError):
@@ -188,7 +201,7 @@ class DockerGridTests(unittest.TestCase):
     def test_output_symlink_cannot_leak_other_files(self):
         def symlink(command, **kwargs):
             self.render_outputs(command, **kwargs)
-            if command[0] != "node":
+            if command[0] != "node" and command[-1] != "--version":
                 results = Path(command[-1])
                 secret = self.root / "unrelated-file"
                 secret.write_text("do not upload")

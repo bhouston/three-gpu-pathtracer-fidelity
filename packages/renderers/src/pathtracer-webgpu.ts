@@ -113,7 +113,7 @@ export async function createWebGPUPathTracerRenderer(
   renderer.setSize(width, height, false);
   camera.aspect = width / height;
   camera.updateProjectionMatrix();
-  // one renderSample() call dispatches ~one sample per pixel, comparable to the WebGL reference's tiles.set(1, 1)
+  // Budget one ray per pixel per wavefront update; completed paths are counted separately.
   pathTracer.frameBudget = width * height;
   pathTracer.setScene(scene, camera);
 

@@ -1,6 +1,6 @@
 # CPU rendering on DockerGrid
 
-The container runs the existing fidelity CLI with Dawn WebGPU on Mesa Lavapipe, WebGL on Mesa llvmpipe, and Blender Cycles on CPU. Each renderer retains its separate child process. Native Node dependencies are installed inside Linux; copying a macOS `node_modules` directory will not work.
+The container runs the existing fidelity CLI with Dawn WebGPU on Mesa Lavapipe, WebGL on Mesa llvmpipe, and Blender Cycles on CPU. Each renderer retains its separate child process. When Blender is selected, the wrapper first runs its version command with a 60-second cold-start allowance to load native libraries before the adapter's five-second probe and concurrent software graphics work. Native Node dependencies are installed inside Linux; copying a macOS `node_modules` directory will not work.
 
 The base is Node 26 on Debian Trixie. Dawn's prebuilt Linux binary needs a newer glibc and C++ runtime than Debian Bookworm. Blender 4.5.3 is downloaded from the official release archive and verified against its SHA-256 digest. Mesa's Vulkan ICD is discovered in the image, and both graphics backends are explicitly configured for software rendering, matching the sibling vitest-gpu CI setup. The pinned pathtracer fork includes both commits from [upstream PR #862](https://github.com/gkjohnson/three-gpu-pathtracer/pull/862), which use core `r32float` for the Turquin lookup texture and fix its WGSL bindings. No Docker-only source patch is needed.
 
