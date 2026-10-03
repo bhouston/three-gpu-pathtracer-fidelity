@@ -16,6 +16,7 @@ ENV BLENDER_EXECUTABLE=/opt/blender/blender \
     HUSKY=0 CI=true
 WORKDIR /app
 COPY . .
+RUN python3 docker/patch-storage-formats.py
 RUN npm install --global pnpm@11.0.8 \
     && pnpm install --frozen-lockfile && pnpm build \
     && node docker/scene-list.mjs > docker/scenes.json \

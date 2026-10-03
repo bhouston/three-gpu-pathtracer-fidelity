@@ -102,14 +102,6 @@ export async function createWebGPUPathTracerRenderer(
   if (setup.gradientBackground) scene.background = new Color(setup.gradientBackground.center);
 
   const pathTracer = new WebGPUPathTracer(renderer);
-  // Dawn/Lavapipe does not expose r16float storage without this optional feature.
-  // RGBA16F preserves the same half-float values sampled from .r, using a core format.
-  if (!renderer.hasFeature('texture-formats-tier1')) {
-    // The pinned fork exposes its default material at runtime but marks it private in JSDoc.
-    const material = (pathTracer as unknown as { material?: { turquinTexture?: { format: number } } }).material;
-    if (!material?.turquinTexture) throw new Error('Pinned path tracer has no Turquin lookup texture');
-    material.turquinTexture.format = RGBAFormat;
-  }
   pathTracer.renderDelay = 0;
   pathTracer.fadeDuration = 0;
   pathTracer.minSamples = 0;

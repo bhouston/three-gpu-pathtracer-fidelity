@@ -2,7 +2,7 @@
 
 The container runs the existing fidelity CLI with Dawn WebGPU on Mesa Lavapipe, WebGL on Mesa llvmpipe, and Blender Cycles on CPU. Each renderer retains its separate child process. Native Node dependencies are installed inside Linux; copying a macOS `node_modules` directory will not work.
 
-The base is Node 26 on Debian Trixie. Dawn's prebuilt Linux binary needs a newer glibc and C++ runtime than Debian Bookworm. Blender 4.5.3 is downloaded from the official release archive and verified against its SHA-256 digest. Mesa's Vulkan ICD is discovered in the image, and both graphics backends are explicitly configured for software rendering, matching the sibling vitest-gpu CI setup. When the optional `texture-formats-tier1` feature is unavailable, the WebGPU adapter stores its Turquin lookup in core `rgba16float` instead of `r16float`; the sampled red-channel half-float values retain the same precision.
+The base is Node 26 on Debian Trixie. Dawn's prebuilt Linux binary needs a newer glibc and C++ runtime than Debian Bookworm. Blender 4.5.3 is downloaded from the official release archive and verified against its SHA-256 digest. Mesa's Vulkan ICD is discovered in the image, and both graphics backends are explicitly configured for software rendering, matching the sibling vitest-gpu CI setup. The image applies a guarded patch to the pinned fork's Turquin lookup texture and matching WGSL declaration, using core `rgba16float` instead of optional `r16float`. The sampled red-channel half-float values retain the same precision. This patch applies to the image's source copy; the checked-out submodule is unchanged. The build fails if a fork update changes the patch targets.
 
 ## Build and register
 
