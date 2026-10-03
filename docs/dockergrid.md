@@ -2,7 +2,7 @@
 
 The container runs the existing fidelity CLI with Dawn WebGPU on Mesa Lavapipe, WebGL on Mesa llvmpipe, and Blender Cycles on CPU. Each renderer retains its separate child process. Native Node dependencies are installed inside Linux; copying a macOS `node_modules` directory will not work.
 
-The base is Node 26 on Debian Trixie. Dawn's prebuilt Linux binary needs a newer glibc and C++ runtime than Debian Bookworm. Blender 4.5.3 is downloaded from the official release archive and verified against its SHA-256 digest. Mesa's Vulkan ICD is discovered in the image, and both graphics backends are explicitly configured for software rendering.
+The base is Node 26 on Debian Trixie. Dawn's prebuilt Linux binary needs a newer glibc and C++ runtime than Debian Bookworm. Blender 4.5.3 is downloaded from the official release archive and verified against its SHA-256 digest. Mesa's Vulkan ICD is discovered in the image, and both graphics backends are explicitly configured for software rendering, matching the sibling vitest-gpu CI setup. When the optional `texture-formats-tier1` feature is unavailable, the WebGPU adapter stores its Turquin lookup in core `rgba16float` instead of `r16float`; the sampled red-channel half-float values retain the same precision.
 
 ## Build and register
 
@@ -30,7 +30,7 @@ Registration builds the image remotely and discovers its input schema with `--de
 
 Each task renders into a fresh temporary directory. Existing committed references are not overwritten. Sample thresholds are disabled so the requested sample count is honored. Optional width and height overrides apply equally to all three engines, including the camera aspect ratio.
 
-`renderers=all` renders all three engines and runs `fidelity-kit process` to generate comparison metrics and difference images. Selected individual engines produce only their render. Every result file is uploaded with its MIME type, and `results.tar.gz` contains the complete results directory for local inspection with fidelity-kit. The WebGPU AVIF carries the `primary` role for preview presentation. Failed processes and missing renders fail the DockerGrid attempt and retain its logs.
+`renderers=all` renders all three engines and runs `fidelity-kit process` to generate comparison metrics and difference images. Selected individual engines produce only their render. Every result file is uploaded with its MIME type, and `outputs.tar.gz` contains the complete results directory for local inspection with fidelity-kit. The WebGPU AVIF carries the `primary` role for preview presentation. Failed processes and missing renders fail the DockerGrid attempt and retain its logs.
 
 For an independent Linux smoke check, run the image's `node docker/check-software.mjs` command; it verifies both adapter identities before rendering. This command needs the image's entrypoint to set its Vulkan ICD environment.
 
