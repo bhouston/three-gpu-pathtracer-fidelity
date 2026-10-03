@@ -28,6 +28,7 @@ jobs:
       - run: pnpm tsc
       - run: pnpm lint
       - run: pnpm test --coverage
+      - run: node --test scripts/dockergrid-batch.test.mjs
       - run: python3 -m unittest discover -s docker -p 'test_*.py' -v
       - name: Audit dependencies
         id: audit
