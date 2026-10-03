@@ -12,7 +12,7 @@ RUN curl -fsSL "https://download.blender.org/release/Blender4.5/blender-${BLENDE
     && rm /tmp/blender.tar.xz
 ENV BLENDER_EXECUTABLE=/opt/blender/blender \
     FIDELITY_SOFTWARE_RENDERING=1 LIBGL_ALWAYS_SOFTWARE=1 GALLIUM_DRIVER=llvmpipe \
-    LP_NUM_THREADS=4 OMP_NUM_THREADS=4 XDG_RUNTIME_DIR=/tmp \
+    LP_NUM_THREADS=8 OMP_NUM_THREADS=8 XDG_RUNTIME_DIR=/tmp \
     HUSKY=0 CI=true
 WORKDIR /app
 COPY . .
