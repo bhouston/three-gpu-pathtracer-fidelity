@@ -136,7 +136,7 @@ pnpm farm submit pathtracer-fidelity-single --scene gi-basic --renderer blender 
 
 The dashboard offers the same schema-generated scene, singular renderer, and sampling controls. Select **8 CPUs / 8 GiB** in its execution settings. There are no resolution controls or multi-engine selections in the container schema. Register a new image version for this schema; older registered images retain their older input contract.
 
-A full cloud batch contains one task for every example × engine pair. Each task has independent resources, logs, and output. Build the host CLI, then generate the manifest in this repository:
+A full cloud batch contains one task for every example × engine pair. Each task has independent resources, logs, and output. Full-suite resubmission is deferred until real GPU execution is supported, following cancellation of the CPU preview batch described below. The CPU commands here document that workflow and can also generate small selected integration batches. Build the host CLI, then generate the manifest in this repository:
 
 ```sh
 pnpm build
@@ -190,7 +190,7 @@ python3 scripts/dockergrid-collect.py \
   --output /tmp/fidelity-results --require-complete
 ```
 
-The collector validates each output against its task's scene and engine, uses the highest available attempt, verifies AVIF MIME type and exact byte size, and downloads with at most eight workers (`--workers 1` through `8`). It restores `<scene>/beauty/<renderer>.avif` beneath the selected output directory, matching the CLI results layout and copies `results/fidelity.json` there. Invalid exports or failed downloads exit with an error; failed downloads never replace an existing image. Jobs with repeated scene/engine pairs are rejected because they would share a local destination.
+The collector validates each output against its task's scene and engine, uses the highest available attempt, verifies AVIF MIME type and exact byte size, and downloads with at most eight workers (`--workers 1` through `8`). It restores `<scene>/beauty/<renderer>.avif` beneath the selected output directory, matching the CLI results layout, and copies `results/fidelity.json` there. Invalid exports or failed downloads exit with an error; failed downloads never replace an existing image. Jobs with repeated scene/engine pairs are rejected because they would share a local destination.
 
 Omit `--require-complete` to collect currently available outputs while the batch runs. The JSON report marks the collection as partial, lists missing scene/engine pairs, and includes job status; stderr warns that comparison processing should wait. Re-export both JSON files and rerun when more tasks finish. Signed URLs expire, so refresh the outputs export if downloads fail. `--require-complete` rejects a job that has not succeeded or still lacks any expected output before writing files.
 
@@ -213,6 +213,20 @@ The collector does not compute metrics, deltas, or archives. Use matching settin
 | GPU validation errors mention storage formats | Confirm the pathtracer submodule matches the recorded pin containing PR #862. Inspect the task logs before treating an image as a result.        |
 | Black render or missing output                | The task should fail. Inspect renderer logs and verify the selected AVIF instead of reusing old results.                                         |
 | Local default mode fails to contact the farm  | Supply an explicit rendering command for standalone Docker use; default mode expects farm credentials.                                           |
+
+## Verified single-render preview
+
+The preview image `pathtracer-fidelity-single` was built with the full scene catalog at immutable digest `sha256:685afff7b7840ad67d79dcc13950f763ab60c7fe01ee1fe9557ce29bc9a2f9e1`.
+
+[Job 35d5fcaf-994d-415e-9e3e-62c262d5bf35](https://dockergrid-dashboard-50046401737.us-central1.run.app/jobs/35d5fcaf-994d-415e-9e3e-62c262d5bf35) succeeded with three independent `gi-basic` tasks: one each for WebGPU, legacy WebGL, and Blender CPU. Each task used 8 CPUs / 8 GiB and rendered at the native 640×480 dimensions with two samples and adaptive thresholds disabled. The job produced exactly three primary AVIFs, with no metrics, deltas, or archive. The collector ran with `--require-complete`, downloaded all three, verified their MIME types and byte sizes, and restored the local results hierarchy.
+
+[Job 39719764-f97a-4228-8b2d-845eca88841a](https://dockergrid-dashboard-50046401737.us-central1.run.app/jobs/39719764-f97a-4228-8b2d-845eca88841a) also succeeded for the WebGPU `khronos-Cube` canary at its native 768×768 dimensions. Its 589,824 pixels fit within the pinned wavefront backend's 599,186-ray pool, so this job does not verify overflow queue behavior. GI's 307,200 pixels also fit within that pool.
+
+[Job 8e628968-64f7-46e6-b93f-f44351a9f570](https://dockergrid-dashboard-50046401737.us-central1.run.app/jobs/8e628968-64f7-46e6-b93f-f44351a9f570) succeeded for WebGPU `model-little-lamp` at native 1024×768 dimensions. Its 786,432 pixels exceed the 599,186-ray pool and exercise the overflow pixel queue. The CLI reported two completed samples, 22.7 seconds of rendering, and 5.5 seconds of setup. Collection with `--require-complete` succeeded, and decoded image metadata confirmed the native dimensions.
+
+All three canaries used two samples with adaptive thresholds disabled. They verify native-dimension rendering, independent task outputs, and collection; their noisy images are not converged fidelity baselines. Comparisons remain a separate local step.
+
+The full 600-task batch was submitted as [job fca87e78-b491-4c63-a616-929fa75b8d4d](https://dockergrid-dashboard-50046401737.us-central1.run.app/jobs/fca87e78-b491-4c63-a616-929fa75b8d4d), covering 200 examples × three engines with the normal CLI adaptive defaults: up to 4096 samples, minimum 128 path tracer samples, and 0.005 noise thresholds. Each task requests 8 CPUs / 8 GiB, with parallelism 20 and no retries. Its Cloud Run execution was canceled before completion because the full software CPU run was too slow. Any collected images from that job represent partial results. A new full-suite submission is deferred until real GPU execution is supported; the successful two-sample canaries above remain the verified preview evidence.
 
 ## Historical preview run before the single-render contract
 
