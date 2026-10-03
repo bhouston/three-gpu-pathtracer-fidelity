@@ -4,6 +4,7 @@ import { mkdir } from 'node:fs/promises';
 import path from 'node:path';
 import sharp from 'sharp';
 import type { RendererName } from '@pathtracer-fidelity/renderers';
+import { renderUntilSamples } from './sample-renderer.js';
 
 /** A renderer job can also target Blender Cycles, a second ground-truth renderer that isn't a `LiveRenderer`
  * (it renders in one batch call via `renderBlender`, not `createRenderer`'s incremental frame loop). */
@@ -78,14 +79,11 @@ async function main(job: RenderJob): Promise<void> {
     const monitor =
       threshold > 0 ? new ConvergenceMonitor(width, height, { threshold, minSamples: job.minSamples ?? 0 }) : undefined;
     const renderStart = performance.now();
+    let samples = 0;
     // fixed sample count without a threshold; otherwise geometric checkpoints compare the image with an earlier one
     for (const checkpoint of monitor ? checkpoints(job.samples) : [job.samples]) {
-      while (renderer.frames < checkpoint) {
-        headless.animationFrame();
-        renderer.render();
-        await new Promise((resolve) => setImmediate(resolve)); // lets async shader compilation progress
-      }
-      if (monitor?.add(renderer.frames, await headless.readPixels(canvas))) break;
+      samples = await renderUntilSamples(renderer, checkpoint, samples, headless.animationFrame);
+      if (monitor?.add(samples, await headless.readPixels(canvas))) break;
     }
     const pixels = await headless.readPixels(canvas);
     const renderMs = performance.now() - renderStart;
@@ -97,7 +95,6 @@ async function main(job: RenderJob): Promise<void> {
       .removeAlpha()
       .avif(RESULT_AVIF)
       .toFile(file);
-    const samples = renderer.frames;
     renderer.dispose();
     const noise = monitor?.last
       ? `, noise ${percent(monitor.last.tile)} p99 tile / ${percent(monitor.last.rms)} rms`

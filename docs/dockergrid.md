@@ -20,7 +20,7 @@ From a built DockerGrid checkout:
 ```sh
 export DOCKERGRID_API_URL=https://dockergrid-api-50046401737.us-central1.run.app
 pnpm farm auth login
-pnpm farm images register pathtracer-fidelity --context /tmp/fidelity-context.tar.gz
+pnpm farm images register --label pathtracer-fidelity --context /tmp/fidelity-context.tar.gz
 pnpm farm submit pathtracer-fidelity --scene gi-basic --samples 4 --width 128 --height 128 --renderers all --cpu 4 --memory-gib 8 --max-retries 0
 ```
 

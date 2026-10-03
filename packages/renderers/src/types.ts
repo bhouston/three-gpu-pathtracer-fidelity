@@ -18,6 +18,9 @@ export interface LiveRenderer {
   readonly frames: number;
   /** Renders one frame / one full-frame sample to the canvas. */
   render(): void;
+  /** Wavefront backends complete paths over multiple updates; cap and measure actual samples. */
+  setSampleLimit?(samples: number): void;
+  getCompletedSamples?(): Promise<number>;
   /** Resizes the drawing buffer and the camera aspect. */
   setSize(width: number, height: number): void;
   /** Adopts a new camera pose (pass the scene camera after moving it, e.g. from OrbitControls); restarts path tracing. */

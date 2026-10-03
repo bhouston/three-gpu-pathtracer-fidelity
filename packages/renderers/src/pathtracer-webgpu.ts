@@ -128,6 +128,12 @@ export async function createWebGPUPathTracerRenderer(
       pathTracer.renderSample();
       frames++;
     },
+    setSampleLimit(samples) {
+      pathTracer.maxSamples = samples;
+    },
+    async getCompletedSamples() {
+      return (await pathTracer.getSampleCountsAsync()).min;
+    },
     setSize(w, h) {
       renderer.setSize(w, h, false);
       camera.aspect = w / h;
