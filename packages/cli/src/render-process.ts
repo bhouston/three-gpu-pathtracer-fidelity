@@ -4,6 +4,7 @@ import { mkdir } from 'node:fs/promises';
 import path from 'node:path';
 import sharp from 'sharp';
 import type { RendererName } from '@pathtracer-fidelity/renderers';
+import { renderUntilSamples } from './sample-renderer.js';
 
 /** A renderer job can also target Blender Cycles, a second ground-truth renderer that isn't a `LiveRenderer`
  * (it renders in one batch call via `renderBlender`, not `createRenderer`'s incremental frame loop). */
@@ -15,6 +16,9 @@ export interface RenderJob {
   outDir: string;
   /** Maximum samples per pixel; the exact count when the relevant noise threshold is 0. */
   samples: number;
+  /** Optional resolution override for bounded headless and container renders. */
+  width?: number;
+  height?: number;
   /** Path tracers: never stop before this many samples. */
   minSamples?: number;
   /** Path tracers: stop once the percentile-tile noise estimate reaches this (sRGB, 0-1); 0 disables. */
@@ -57,10 +61,17 @@ async function main(job: RenderJob): Promise<void> {
   for (const name of job.scenes) await render(name);
 
   async function render(name: string): Promise<void> {
-    const { width, height, create } = getScene(name);
+    const definition = getScene(name);
+    const width = job.width ?? definition.width;
+    const height = job.height ?? definition.height;
+    const { create } = definition;
     const start = performance.now();
     seedRandom(); // before the scene and renderer draw any random numbers
     const setup = await create(ctx);
+    if (job.width !== undefined || job.height !== undefined) {
+      setup.camera.aspect = width / height;
+      setup.camera.updateProjectionMatrix();
+    }
     const canvas = headless.createCanvas(width, height);
     if (job.renderer === 'blender') return renderBlenderJob(name, setup, canvas, width, height, start);
     const renderer = await createRenderer(job.renderer, canvas, setup, { width, height });
@@ -68,14 +79,11 @@ async function main(job: RenderJob): Promise<void> {
     const monitor =
       threshold > 0 ? new ConvergenceMonitor(width, height, { threshold, minSamples: job.minSamples ?? 0 }) : undefined;
     const renderStart = performance.now();
+    let samples = 0;
     // fixed sample count without a threshold; otherwise geometric checkpoints compare the image with an earlier one
     for (const checkpoint of monitor ? checkpoints(job.samples) : [job.samples]) {
-      while (renderer.frames < checkpoint) {
-        headless.animationFrame();
-        renderer.render();
-        await new Promise((resolve) => setImmediate(resolve)); // lets async shader compilation progress
-      }
-      if (monitor?.add(renderer.frames, await headless.readPixels(canvas))) break;
+      samples = await renderUntilSamples(renderer, checkpoint, samples, headless.animationFrame);
+      if (monitor?.add(samples, await headless.readPixels(canvas))) break;
     }
     const pixels = await headless.readPixels(canvas);
     const renderMs = performance.now() - renderStart;
@@ -87,7 +95,6 @@ async function main(job: RenderJob): Promise<void> {
       .removeAlpha()
       .avif(RESULT_AVIF)
       .toFile(file);
-    const samples = renderer.frames;
     renderer.dispose();
     const noise = monitor?.last
       ? `, noise ${percent(monitor.last.tile)} p99 tile / ${percent(monitor.last.rms)} rms`

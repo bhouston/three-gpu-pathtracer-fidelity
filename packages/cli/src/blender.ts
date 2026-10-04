@@ -20,6 +20,15 @@ export interface BlenderRenderOptions {
 
 /** Returns opaque sRGB RGBA8, top row first. Unsupported features fail instead of silently changing a reference. */
 export async function renderBlender(setup: SceneSetup, options: BlenderRenderOptions): Promise<Uint8Array> {
+  const timeoutSeconds = process.env.FIDELITY_BLENDER_TIMEOUT_SECONDS;
+  let timeoutMs: number | undefined;
+  if (timeoutSeconds !== undefined) {
+    const seconds = Number(timeoutSeconds);
+    if (!/^\d+$/.test(timeoutSeconds) || !Number.isInteger(seconds) || seconds < 1 || seconds > 21600) {
+      throw new Error('FIDELITY_BLENDER_TIMEOUT_SECONDS must be an integer from 1 to 21600');
+    }
+    timeoutMs = seconds * 1000;
+  }
   const { width, height, samples, canvas } = options;
   const camera = setup.camera.clone();
   setup.camera.updateWorldMatrix(true, false);
@@ -49,6 +58,7 @@ export async function renderBlender(setup: SceneSetup, options: BlenderRenderOpt
       width,
       height,
       samples,
+      ...(timeoutMs === undefined ? {} : { timeoutMs }),
       device: options.device ?? 'auto',
       bounces: PATHTRACER_BOUNCES,
       seed: 1,

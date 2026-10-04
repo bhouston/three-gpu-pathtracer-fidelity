@@ -1,5 +1,5 @@
 import { ACESFilmicToneMapping, Color, DataTexture, Group, PerspectiveCamera, Scene, Vector3 } from 'three';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { SceneSetup } from '@pathtracer-fidelity/scenes';
 
 const adapter = vi.hoisted(() => ({ renderScene: vi.fn(), outputSettings: vi.fn() }));
@@ -19,6 +19,7 @@ function setup(): SceneSetup {
 
 beforeEach(() => {
   vi.clearAllMocks();
+  vi.stubEnv('FIDELITY_BLENDER_TIMEOUT_SECONDS', undefined);
   adapter.outputSettings.mockReturnValue({
     toneMapping: 'aces-filmic',
     toneMappingExposure: 1.5,
@@ -26,7 +27,27 @@ beforeEach(() => {
   });
 });
 
+afterEach(() => vi.unstubAllEnvs());
+
 describe('Blender integration', () => {
+  it.each(['1', '21600'])('forwards an explicit Blender timeout of %s seconds', async (seconds) => {
+    vi.stubEnv('FIDELITY_BLENDER_TIMEOUT_SECONDS', seconds);
+    adapter.renderScene.mockResolvedValue({ pixels: new Uint8Array(32) });
+    await renderBlender(setup(), options);
+    expect(adapter.renderScene.mock.calls[0]![0].timeoutMs).toBe(Number(seconds) * 1000);
+  });
+
+  it.each(['', '0', '21601', '-1', '1.5', 'NaN', 'Infinity', ' 60 ', '1e3', 'invalid'])(
+    'rejects invalid Blender timeout %j before calling the adapter',
+    async (seconds) => {
+      vi.stubEnv('FIDELITY_BLENDER_TIMEOUT_SECONDS', seconds);
+      await expect(renderBlender(setup(), options)).rejects.toThrow(
+        'FIDELITY_BLENDER_TIMEOUT_SECONDS must be an integer from 1 to 21600',
+      );
+      expect(adapter.renderScene).not.toHaveBeenCalled();
+    },
+  );
+
   it('passes explicit reference settings and keeps the source camera unchanged', async () => {
     const source = setup();
     const pixels = new Uint8Array(32);
@@ -34,6 +55,7 @@ describe('Blender integration', () => {
     expect(await renderBlender(source, options)).toBe(pixels);
     expect(source.camera.aspect).toBe(1);
     const call = adapter.renderScene.mock.calls[0]![0];
+    expect(call).not.toHaveProperty('timeoutMs');
     expect(call.scene).not.toBe(source.scene);
     expect(call.camera).not.toBe(source.camera);
     expect(call.camera.aspect).toBe(2);

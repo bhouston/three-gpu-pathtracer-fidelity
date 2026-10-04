@@ -15,3 +15,5 @@ results/**/*.vs-*.delta.webp.json
 results/index.json
 results/**/*.tmp
 site/
+__pycache__/
+*.pyc

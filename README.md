@@ -167,6 +167,8 @@ occupied by other renders, or select `gpu` explicitly.
 Actual smoke-render results and known blockers are recorded in
 [rendering integration validation](docs/rendering-integration-validation.md).
 
+For remote CPU rendering with Dawn, WebGL and Blender, see [Docker and DockerGrid guide](docs/dockergrid.md), which explains the software backends, one-scene/one-engine tasks at native dimensions, full-suite batches, and primary AVIF outputs.
+
 The committed images still belong to the previous rendering pipeline. After merging this migration, regenerate
 all renderer/scene pairs, investigate any adapter diagnostics, then run `pnpm exec fidelity-kit process results`
 and commit the regenerated images together. Do not use `--missing-only`: existing images need replacement.
