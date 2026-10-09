@@ -1,0 +1,41 @@
+name: Archival renderer validation
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      # Only the code submodules (workspace packages); the model submodules are gigabytes and only needed to render.
+      - run: npm install --global git-dedup@3.0.2
+      - run: git-dedup submodule update --init --depth 1 submodules/three-gpu-pathtracer submodules/fidelity-kit-blender submodules/fidelity-kit-three-gpu-pathtracer
+      - run: git-dedup store add .
+      - uses: pnpm/action-setup@v5
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: '.nvmrc'
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      - run: pnpm tsc
+      - run: pnpm lint
+      - run: pnpm test --coverage
+      - run: node --test scripts/dockergrid-batch.test.mjs
+      - run: python3 -m unittest discover -s docker -p 'test_*.py' -v
+      - run: python3 -m unittest discover -s scripts -p 'test_*.py' -v
+      - name: Audit dependencies
+        id: audit
+        continue-on-error: true
+        run: pnpm audit --audit-level=high
+      - name: Flag audit findings
+        if: steps.audit.outcome == 'failure'
+        run: echo '::warning::Dependency audit found vulnerabilities or could not reach the registry. Review the audit step.'
+      - uses: actions/upload-artifact@v4
+        with:
+          name: coverage-${{ github.run_id }}-${{ github.job }}
+          path: coverage/

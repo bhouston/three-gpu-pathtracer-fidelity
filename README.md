@@ -1,3 +1,5 @@
+> **Retired from active development.** Use [three-fidelity](https://github.com/bhouston/three-fidelity) and its [unified viewer](https://three-fidelity.ben3d.ca/). All 200 scenes and 545 saved images have explicit identity mappings and exact-byte provenance there. This repository retains the original source, asset pins and captures; its Pages site preserves old links and image URLs.
+
 # three-gpu-pathtracer-fidelity
 
 three-gpu-pathtracer-fidelity validates the new WebGPU-based
