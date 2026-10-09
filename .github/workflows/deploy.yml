@@ -1,4 +1,4 @@
-name: Deploy three-gpu-pathtracer-fidelity to GitHub Pages
+name: Deploy legacy fidelity redirects
 
 on:
   push:
@@ -17,7 +17,7 @@ concurrency:
 
 jobs:
   deploy:
-    name: Deploy three-gpu-pathtracer-fidelity to GitHub Pages
+    name: Deploy legacy fidelity redirects
     runs-on: ubuntu-latest
     environment:
       name: github-pages
@@ -27,8 +27,8 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version-file: '.nvmrc'
-      # Uses the fidelity-kit range from package.json without installing the workspace (which needs submodules).
-      - run: npx -y "fidelity-kit@$(node -p "require('./package.json').devDependencies['fidelity-kit']")" build results --out site/
+      - run: node --test scripts/legacy-links.test.mjs
+      - run: node scripts/build-legacy-redirect.mjs --source --out site/
       - uses: actions/upload-pages-artifact@v4
         with:
           path: site/

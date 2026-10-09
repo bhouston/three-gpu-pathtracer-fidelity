@@ -1,3 +1,5 @@
+> Renderer, scene, UI and capture changes belong in [three-fidelity](https://github.com/bhouston/three-fidelity). This repository is retained for historical provenance and legacy redirects. The rules below apply to archival maintenance only. Original renderer validation is available through the manual archival workflow; active CI builds and tests redirects. Historical software-renderer/container instructions are not current rendering verification guidance.
+
 # Contributing
 
 These rules apply to every contributor, including Claude and Codex. This file is the single source of truth for the workflow.
@@ -19,6 +21,6 @@ Use `type(optional-scope): description`. Allowed types are `feat`, `fix`, `perf`
 
 ## Development and CI
 
-Use Node 26 and the pinned pnpm version in `package.json`. Clone with submodules (`git clone --recurse-submodules`, or `git submodule update --init` afterwards), then run `pnpm install --frozen-lockfile`.
+Use Node 26 and the pinned pnpm version in `package.json`. Clone with submodules (`git-dedup clone --recurse-submodules`, or `git-dedup submodule update --init` afterwards), then run `pnpm install --frozen-lockfile`.
 
 CI checks builds, types, lint, and tests with coverage. It initializes only the code submodules (`three-gpu-pathtracer` and the two fidelity-kit adapters), so tests that need the model submodules (creating every registry scene, LDraw loading) run only locally. Dependency audit findings appear as warnings so existing advisories remain visible without preventing unrelated fixes. Coverage is uploaded as an artifact.
